@@ -1,5 +1,7 @@
 package ch.sharpsoft.hexapod;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 public class Quaternion {
 
 	private final double w, x, y, z;
@@ -33,6 +35,10 @@ public class Quaternion {
 
 	public Quaternion plus(Quaternion b) {
 		return new Quaternion(w + b.w, x + b.x, y + b.y, z + b.z);
+	}
+
+	public Quaternion diff(Quaternion b) {
+		return multiply(b.conjugate());
 	}
 
 	// return a new Quaternion whose value is (this * b)
@@ -159,7 +165,9 @@ public class Quaternion {
 
 	@Override
 	public String toString() {
-		return "Q [w=" + String.format("%.4f", w) + ", x=" + String.format("%.4f", x) + ", y=" + String.format("%.4f", y) + ", z=" + String.format("%.4f", z) + "]";
+		return "[roll,pitch,yaw]= " + Arrays.toString(toAngles()) + "  Q [w=" + String.format("%.4f", w) + ", x="
+				+ String.format("%.4f", x) + ", y=" + String.format("%.4f", y) + ", z=" + String.format("%.4f", z)
+				+ "]";
 	}
 
 	@Override

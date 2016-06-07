@@ -101,4 +101,31 @@ public class QuternionTest {
 			Assert.assertEquals(Math.PI / i, quat.toAngles()[2], 0.01f);
 		}
 	}
+
+	@Test
+	public void testDiffRoll() throws Exception {
+		Quaternion quat1 = Quaternion.fromEuler(0.57, 0.0, 0.0);
+		Quaternion quat2 = Quaternion.fromEuler(0.923, 0.0, 0.0);
+		Quaternion diff = quat1.diff(quat2);
+		double diffAngle = diff.toAngles()[0];
+		Assert.assertEquals((0.57) - (0.923), diffAngle, 0.01f);
+	}
+
+	@Test
+	public void testDiffPitch() throws Exception {
+		Quaternion quat1 = Quaternion.fromEuler(0.0, 0.57, 0.0);
+		Quaternion quat2 = Quaternion.fromEuler(0.0, 0.923, 0.0);
+		Quaternion diff = quat1.diff(quat2);
+		double diffAngle = diff.toAngles()[1];
+		Assert.assertEquals((0.57) - (0.923), diffAngle, 0.01f);
+	}
+
+	@Test
+	public void testDiffYaw() throws Exception {
+		Quaternion quat1 = Quaternion.fromEuler(0.0, 0.0, 0.57);
+		Quaternion quat2 = Quaternion.fromEuler(0.0, 0.0, 0.923);
+		Quaternion diff = quat1.diff(quat2);
+		double diffAngle = diff.toAngles()[2];
+		Assert.assertEquals((0.57) - (0.923), diffAngle, 0.01f);
+	}
 }

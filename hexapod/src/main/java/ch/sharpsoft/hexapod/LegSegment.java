@@ -1,22 +1,19 @@
 package ch.sharpsoft.hexapod;
 
-
 public class LegSegment {
 
 	private Vector3 startPoint;
-	private Vector3 vector;
+	private Quaternion orientation;
+	private final double length;
 
-	public LegSegment(Vector3 startPoint, Vector3 vector) {
-		this.setStartPoint(startPoint);
-		this.setVector(vector);
+	public LegSegment(Vector3 startPoint, double length, Quaternion orientation) {
+		this.startPoint = startPoint;
+		this.length = length;
+		this.orientation = orientation;
 	}
 
 	public Vector3 getVector() {
-		return vector;
-	}
-
-	public void setVector(Vector3 vector) {
-		this.vector = vector;
+		return orientation.multiply(new Vector3(length, 0, 0));
 	}
 
 	public Vector3 getStartPoint() {
@@ -27,8 +24,20 @@ public class LegSegment {
 		this.startPoint = startPoint;
 	}
 
+	public Vector3 getEndPoint() {
+		return startPoint.add(getVector());
+	}
+
+	public Quaternion getOrientation() {
+		return orientation;
+	}
+
+	public void setOrientation(Quaternion orientation) {
+		this.orientation = orientation;
+	}
+
 	@Override
 	public String toString() {
-		return "LegSegment [startPoint=" + startPoint + ", vector=" + vector + "]";
+		return "LegSegment [startPoint=" + startPoint + ", length=" + length + ", orientation=" + orientation + "]";
 	}
 }

@@ -1,5 +1,7 @@
 package ch.sharpsoft.hexapod;
 
+import java.util.Arrays;
+
 /**
  * <code>
  *    S
@@ -38,13 +40,24 @@ public class Leg {
 		this.id = id;
 		this.startOrientation = startOrientation;
 		this.startPoint = startPoint;
-		startSegment = new LegSegment(startPoint, startOrientation.multiply(new Vector3(0.1, 0.0, 0.0)));
-		segment1 = new LegSegment(startPoint.add(startSegment.getVector()), startOrientation.multiply(new Vector3(5, 0.0, 0.0)));
-		segment2 = new LegSegment(segment1.getStartPoint().add(segment1.getVector()), startOrientation.multiply(new Vector3(7, 0.0, 0.0)));
-		endSegment = new LegSegment(segment2.getStartPoint().add(segment2.getVector()), startOrientation.multiply(new Vector3(13, 0.0, 0.0)));
+		startSegment = new LegSegment(startPoint, 0.0, startOrientation);
+		segment1 = new LegSegment(startPoint.add(startSegment.getVector()), 5, startOrientation);
+		segment2 = new LegSegment(segment1.getStartPoint().add(segment1.getVector()), 7, startOrientation);
+		endSegment = new LegSegment(segment2.getStartPoint().add(segment2.getVector()), 13, startOrientation);
 		k1 = new Knee(startSegment, segment1, true);
 		k2 = new Knee(segment1, segment2, false);
 		k3 = new Knee(segment2, endSegment, false);
+	}
+
+	public void setAngles(double k1, double k2, double k3) {
+		Quaternion o1 = Quaternion.fromEuler(0.0, 0.0, k1).multiply(startOrientation);
+		segment1.setOrientation(o1);
+		Quaternion o2 = Quaternion.fromEuler(0.0, k2, 0.0).multiply(o1);
+		segment2.setOrientation(o2);
+		Quaternion o3 = Quaternion.fromEuler(0.0, k3, 0.0).multiply(o2);
+		endSegment.setOrientation(o3);
+		segment2.setStartPoint(segment1.getEndPoint());
+		endSegment.setStartPoint(segment2.getEndPoint());
 	}
 
 	public int getId() {
@@ -89,7 +102,8 @@ public class Leg {
 
 	@Override
 	public String toString() {
-		return "\nLeg [id=" + id + ", startPoint=" + startPoint + ", startOrientation=" + startOrientation + ", startSegment=" + startSegment + ", segment1=" + segment1 + ", segment2=" + segment2 + ", endSegment=" + endSegment + ", k1="
-				+ k1 + ", k2=" + k2 + ", k3=" + k3 + "]";
+		return "\nLeg [id=" + id + ", startPoint=" + startPoint + ", startOrientation=" + startOrientation
+				+ ", startSegment=" + startSegment + ", segment1=" + segment1 + ", segment2=" + segment2
+				+ ", endSegment=" + endSegment + ", k1=" + k1 + ", k2=" + k2 + ", k3=" + k3 + "]";
 	}
 }
