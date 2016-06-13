@@ -50,11 +50,11 @@ public class Leg {
 	}
 
 	public void setAngles(double k1, double k2, double k3) {
-		Quaternion o1 = Quaternion.fromEuler(0.0, 0.0, k1).multiply(startOrientation);
+		Quaternion o1 = startOrientation.multiply(Quaternion.fromEuler(0.0, 0.0, k1));
+		Quaternion o2 = o1.multiply(Quaternion.fromEuler(0.0, k2, 0.0));
+		Quaternion o3 = o2.multiply(Quaternion.fromEuler(0.0, k3, 0.0));
 		segment1.setOrientation(o1);
-		Quaternion o2 = Quaternion.fromEuler(0.0, k2, 0.0).multiply(o1);
 		segment2.setOrientation(o2);
-		Quaternion o3 = Quaternion.fromEuler(0.0, k3, 0.0).multiply(o2);
 		endSegment.setOrientation(o3);
 		segment2.setStartPoint(segment1.getEndPoint());
 		endSegment.setStartPoint(segment2.getEndPoint());
@@ -102,8 +102,7 @@ public class Leg {
 
 	@Override
 	public String toString() {
-		return "\nLeg [id=" + id + ", startPoint=" + startPoint + ", startOrientation=" + startOrientation
-				+ ", startSegment=" + startSegment + ", segment1=" + segment1 + ", segment2=" + segment2
-				+ ", endSegment=" + endSegment + ", k1=" + k1 + ", k2=" + k2 + ", k3=" + k3 + "]";
+		return "\nLeg [id=" + id + ", startPoint=" + startPoint + ", startOrientation=" + startOrientation + ", startSegment=" + startSegment + ", segment1=" + segment1 + ", segment2=" + segment2 + ", endSegment=" + endSegment + ", k1="
+				+ k1 + ", k2=" + k2 + ", k3=" + k3 + "]";
 	}
 }

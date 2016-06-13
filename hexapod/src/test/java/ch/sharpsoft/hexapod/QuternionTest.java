@@ -1,6 +1,7 @@
 package ch.sharpsoft.hexapod;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 public class QuternionTest {
@@ -10,7 +11,7 @@ public class QuternionTest {
 		Quaternion quat = Quaternion.fromEuler(0.0, 0.0, Math.PI / 2);
 		Vector3 v = new Vector3(0.0, 1.0, 0.0);
 		Vector3 m = quat.multiply(v);
-		Assert.assertEquals(1.0, m.getX(), 0.01f);
+		assertEquals(1.0, m.getX(), 0.01f);
 	}
 
 	@Test
@@ -18,7 +19,7 @@ public class QuternionTest {
 		Quaternion quat = Quaternion.fromEuler(0.0, 0.0, Math.PI / 2);
 		Vector3 v = new Vector3(1.0, 0.0, 0.0);
 		Vector3 m = quat.multiply(v);
-		Assert.assertEquals(-1.0, m.getY(), 0.01f);
+		assertEquals(-1.0, m.getY(), 0.01f);
 	}
 
 	@Test
@@ -26,7 +27,7 @@ public class QuternionTest {
 		Quaternion quat = Quaternion.fromEuler(0.0, 0.0, Math.PI / 2);
 		Vector3 v = new Vector3(0.0, 0.0, 1.0);
 		Vector3 m = quat.multiply(v);
-		Assert.assertEquals(1.0, m.getZ(), 0.01f);
+		assertEquals(1.0, m.getZ(), 0.01f);
 	}
 
 	@Test
@@ -34,7 +35,7 @@ public class QuternionTest {
 		Quaternion quat = Quaternion.fromEuler(0.0, 0.0, -Math.PI / 2);
 		Vector3 v = new Vector3(1.0, 0.0, 0.0);
 		Vector3 m = quat.multiply(v);
-		Assert.assertEquals(1.0, m.getY(), 0.01f);
+		assertEquals(1.0, m.getY(), 0.01f);
 	}
 
 	@Test
@@ -42,7 +43,7 @@ public class QuternionTest {
 		Quaternion quat = Quaternion.fromEuler(0.0, Math.PI / 2, 0.0);
 		Vector3 v = new Vector3(1.0, 0.0, 0.0);
 		Vector3 m = quat.multiply(v);
-		Assert.assertEquals(-1.0, m.getZ(), 0.01f);
+		assertEquals(-1.0, m.getZ(), 0.01f);
 	}
 
 	@Test
@@ -50,7 +51,7 @@ public class QuternionTest {
 		Quaternion quat = Quaternion.fromEuler(Math.PI / 2, 0.0, 0.0);
 		Vector3 v = new Vector3(1.0, 0.0, 0.0);
 		Vector3 m = quat.multiply(v);
-		Assert.assertEquals(1.0, m.getX(), 0.01f);
+		assertEquals(1.0, m.getX(), 0.01f);
 	}
 
 	@Test
@@ -58,7 +59,7 @@ public class QuternionTest {
 		Quaternion quat = Quaternion.fromEuler(Math.PI / 2, 0.0, 0.0);
 		Vector3 v = new Vector3(0.0, 1.0, 0.0);
 		Vector3 m = quat.multiply(v);
-		Assert.assertEquals(-1.0, m.getZ(), 0.01f);
+		assertEquals(-1.0, m.getZ(), 0.01f);
 	}
 
 	@Test
@@ -66,7 +67,16 @@ public class QuternionTest {
 		Quaternion quat = Quaternion.fromEuler(-Math.PI / 2, 0.0, 0.0);
 		Vector3 v = new Vector3(0.0, 1.0, 0.0);
 		Vector3 m = quat.multiply(v);
-		Assert.assertEquals(1.0, m.getZ(), 0.01f);
+		assertEquals(1.0, m.getZ(), 0.01f);
+	}
+
+	@Test
+	public void testVector9() throws Exception {
+		Quaternion quat = Quaternion.fromEuler(0.0, -Math.PI / 4, 0.0);
+		Vector3 v = new Vector3(5.0, 0.0, 0.0);
+		Vector3 m = quat.multiply(v);
+		assertEquals(3.5355, m.getZ(), 0.01f);
+		assertEquals(3.5355, m.getX(), 0.01f);
 	}
 
 	@Test
@@ -76,7 +86,7 @@ public class QuternionTest {
 				continue;
 			}
 			Quaternion quat = Quaternion.fromEuler(Math.PI / i, 0.0, 0.0);
-			Assert.assertEquals(Math.PI / i, quat.toAngles()[0], 0.01f);
+			assertEquals(Math.PI / i, quat.toAngles()[0], 0.01f);
 		}
 	}
 
@@ -87,7 +97,7 @@ public class QuternionTest {
 				continue;
 			}
 			Quaternion quat = Quaternion.fromEuler(0.0, Math.PI / i, 0.0);
-			Assert.assertEquals(Math.PI / i, quat.toAngles()[1], 0.01f);
+			assertEquals(Math.PI / i, quat.toAngles()[1], 0.01f);
 		}
 	}
 
@@ -98,7 +108,7 @@ public class QuternionTest {
 				continue;
 			}
 			Quaternion quat = Quaternion.fromEuler(0.0, 0.0, Math.PI / i);
-			Assert.assertEquals(Math.PI / i, quat.toAngles()[2], 0.01f);
+			assertEquals(Math.PI / i, quat.toAngles()[2], 0.01f);
 		}
 	}
 
@@ -106,26 +116,68 @@ public class QuternionTest {
 	public void testDiffRoll() throws Exception {
 		Quaternion quat1 = Quaternion.fromEuler(0.57, 0.0, 0.0);
 		Quaternion quat2 = Quaternion.fromEuler(0.923, 0.0, 0.0);
-		Quaternion diff = quat1.diff(quat2);
+		Quaternion diff = quat1.mulInverse(quat2);
 		double diffAngle = diff.toAngles()[0];
-		Assert.assertEquals((0.57) - (0.923), diffAngle, 0.01f);
+		assertEquals((0.57) - (0.923), diffAngle, 0.01f);
 	}
 
 	@Test
 	public void testDiffPitch() throws Exception {
 		Quaternion quat1 = Quaternion.fromEuler(0.0, 0.57, 0.0);
 		Quaternion quat2 = Quaternion.fromEuler(0.0, 0.923, 0.0);
-		Quaternion diff = quat1.diff(quat2);
+		Quaternion diff = quat1.mulInverse(quat2);
 		double diffAngle = diff.toAngles()[1];
-		Assert.assertEquals((0.57) - (0.923), diffAngle, 0.01f);
+		assertEquals((0.57) - (0.923), diffAngle, 0.01f);
 	}
 
 	@Test
 	public void testDiffYaw() throws Exception {
 		Quaternion quat1 = Quaternion.fromEuler(0.0, 0.0, 0.57);
 		Quaternion quat2 = Quaternion.fromEuler(0.0, 0.0, 0.923);
-		Quaternion diff = quat1.diff(quat2);
+		Quaternion diff = quat1.mulInverse(quat2);
 		double diffAngle = diff.toAngles()[2];
-		Assert.assertEquals((0.57) - (0.923), diffAngle, 0.01f);
+		assertEquals((0.57) - (0.923), diffAngle, 0.01f);
+	}
+
+	@Test
+	public void testMulInverse() throws Exception {
+		Quaternion o1 = Quaternion.fromEuler(0.1, 0.0, 0.0);
+		Quaternion o2 = Quaternion.fromEuler(0.0, 0.2, 0.0);
+		Quaternion o3 = Quaternion.fromEuler(0.0, 0.0, 0.3);
+
+		assertEquals(0.1, o1.toAngles()[0], 0.001);
+		assertEquals(0.2, o2.toAngles()[1], 0.001);
+		assertEquals(0.3, o3.toAngles()[2], 0.001);
+
+		Quaternion o12 = o1.multiply(o2);
+		Quaternion o13 = o1.multiply(o3);
+		Quaternion o23 = o2.multiply(o3);
+		Quaternion o32 = o3.multiply(o2);
+
+		o1 = o12.mulInverse(o2);
+		o2 = o23.mulInverse(o3);
+		o3 = o32.mulInverse(o2);
+
+		assertEquals(0.1, o1.toAngles()[0], 0.001);
+		assertEquals(0.2, o2.toAngles()[1], 0.001);
+		assertEquals(0.3, o3.toAngles()[2], 0.001);
+	}
+
+	@Test
+	public void testMulInverse2() throws Exception {
+		Quaternion o1 = Quaternion.fromEuler(0.1, 0.0, 0.0);
+		Quaternion o2 = Quaternion.fromEuler(0.0, 0.2, 0.0);
+		Quaternion o3 = Quaternion.fromEuler(0.0, 0.0, 0.3);
+		Quaternion o4 = Quaternion.fromEuler(0.0, 1.1, 0.0);
+
+		Quaternion o12 = o1.multiply(o2);
+		Quaternion o123 = o12.multiply(o3);
+		Quaternion o1234 = o123.multiply(o4);
+
+		o123 = o1234.mulInverse(o4);
+		o12 = o123.mulInverse(o3);
+		o1 = o12.mulInverse(o2);
+
+		assertEquals(0.1, o1.toAngles()[0], 0.001);
 	}
 }

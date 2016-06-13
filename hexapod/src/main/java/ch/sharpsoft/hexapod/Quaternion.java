@@ -1,71 +1,94 @@
 package ch.sharpsoft.hexapod;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 
 public class Quaternion {
 
-	private final double w, x, y, z;
+	public final double x;
+	public final double y;
+	public final double z;
+	public final double w;
 
-	public Quaternion(double[] q) {
-		this.w = q[0];
-		this.x = q[1];
-		this.y = q[2];
-		this.z = q[3];
+	public Quaternion(final double[] q) {
+		this(q[0], q[1], q[2], q[3]);
 	}
 
-	public Quaternion(double w, double x, double y, double z) {
-		this.w = w;
+	public Quaternion(final double x, final double y, final double z, final double w) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.w = w;
+	}
+
+	/**
+	 * @return the length squared of the quaternion
+	 */
+	public double lengthSquared() {
+		return x * x + y * y + z * z + w * w;
 	}
 
 	public double norm() {
-		return Math.sqrt(w * w + x * x + y * y + z * z);
+		return Math.sqrt(lengthSquared());
 	}
 
 	public Quaternion normalize() {
 		final double norm = norm();
-		return new Quaternion((double) (w / norm), (double) (x / norm), (double) (y / norm), (double) (z / norm));
+		return new Quaternion((x / norm), (y / norm), (z / norm), (w / norm));
 	}
 
 	public Quaternion conjugate() {
-		return new Quaternion(w, -x, -y, -z);
+		return new Quaternion(-x, -y, -z, w);
 	}
 
-	public Quaternion plus(Quaternion b) {
-		return new Quaternion(w + b.w, x + b.x, y + b.y, z + b.z);
+	public Quaternion plus(final Quaternion b) {
+		return new Quaternion(x + b.x, y + b.y, z + b.z, w + b.w);
 	}
 
-	public Quaternion diff(Quaternion b) {
-		return multiply(b.conjugate());
+	// return a new Quaternion whose value is the inverse of this
+	public Quaternion inverse() {
+		final double d = lengthSquared();
+		return new Quaternion(-x / d, -y / d, -z / d, w / d).normalize();
+	}
+
+	/**
+	 * Multiplies quaternion by the inverse of quaternion right.
+	 */
+	public Quaternion mulInverse(final Quaternion right) {
+		double n = right.lengthSquared();
+		// zero-div may occur.
+		n = (n == 0.0 ? n : 1 / n);
+		return new Quaternion(//
+				(x * right.w - w * right.x - y * right.z + z * right.y) * n, //
+				(y * right.w - w * right.y - z * right.x + x * right.z) * n, //
+				(z * right.w - w * right.z - x * right.y + y * right.x) * n, //
+				(w * right.w + x * right.x + y * right.y + z * right.z) * n);
 	}
 
 	// return a new Quaternion whose value is (this * b)
-	public Quaternion multiply(Quaternion b) {
-		double w0 = w * b.w - x * b.x - y * b.y - z * b.z;
-		double x0 = w * b.x + x * b.w + y * b.z - z * b.y;
-		double y0 = w * b.y - x * b.z + y * b.w + z * b.x;
-		double z0 = w * b.z + x * b.y - y * b.x + z * b.w;
-		return new Quaternion(w0, x0, y0, z0);
+	public Quaternion multiply(final Quaternion q) {
+		return new Quaternion(//
+				(w * q.x) + (x * q.w) + (y * q.z) - (z * q.y), //
+				(w * q.y) + (y * q.w) + (z * q.x) - (x * q.z), //
+				(w * q.z) + (z * q.w) + (x * q.y) - (y * q.x), //
+				(w * q.w) - (x * q.x) - (y * q.y) - (z * q.z));
 	}
 
 	public Vector3 multiply(final Vector3 vec) {
-		Quaternion vecQuat = new Quaternion(0.0f, vec.getX(), vec.getY(), vec.getZ());
-		Quaternion resQuat = multiply(vecQuat).multiply(conjugate());
+		final Quaternion vecQuat = new Quaternion(vec.getX(), vec.getY(), vec.getZ(), 0.0f);
+		final Quaternion resQuat = multiply(vecQuat).multiply(conjugate());
 		return (new Vector3(resQuat.x, resQuat.y, resQuat.z));
 	}
 
-	public static Quaternion fromAxis(Vector3 v, double angle) {
-		Vector3 vn = v.normalize();
+	public static Quaternion fromAxis(final Vector3 v, final double angle) {
+		final Vector3 vn = v.normalize();
 
-		double sinAngle = (double) Math.sin(angle / 2);
+		final double sinAngle = Math.sin(angle / 2);
 
-		double x = (vn.getX() * sinAngle);
-		double y = (vn.getY() * sinAngle);
-		double z = (vn.getZ() * sinAngle);
-		double w = (double) Math.cos(angle / 2);
-		return new Quaternion(w, x, y, z);
+		final double x = (vn.getX() * sinAngle);
+		final double y = (vn.getY() * sinAngle);
+		final double z = (vn.getZ() * sinAngle);
+		final double w = Math.cos(angle / 2);
+		return new Quaternion(x, y, z, w);
 	}
 
 	/**
@@ -78,29 +101,29 @@ public class Quaternion {
 	 *            in radiants
 	 * @return
 	 */
-	public static Quaternion fromEuler(double roll, double pitch, double yaw) {
+	public static Quaternion fromEuler(final double roll, final double pitch, final double yaw) {
 		// Basically we create 3 Quaternions, one for pitch, one for yaw, one
 		// for roll
 		// and multiply those together.
 		// the calculation below does the same, just shorter
 
-		double p = (double) (pitch / 2.0);
-		double y = (double) (-yaw / 2.0);
-		double r = (double) (-roll / 2.0);
+		final double p = (pitch / 2.0);
+		final double y = (-yaw / 2.0);
+		final double r = (-roll / 2.0);
 
-		double sinp = (double) Math.sin(p);
-		double siny = (double) Math.sin(y);
-		double sinr = (double) Math.sin(r);
-		double cosp = (double) Math.cos(p);
-		double cosy = (double) Math.cos(y);
-		double cosr = (double) Math.cos(r);
+		final double sinp = Math.sin(p);
+		final double siny = Math.sin(y);
+		final double sinr = Math.sin(r);
+		final double cosp = Math.cos(p);
+		final double cosy = Math.cos(y);
+		final double cosr = Math.cos(r);
 
-		double _x = sinr * cosp * cosy - cosr * sinp * siny;
-		double _y = cosr * sinp * cosy + sinr * cosp * siny;
-		double _z = cosr * cosp * siny - sinr * sinp * cosy;
-		double _w = cosr * cosp * cosy + sinr * sinp * siny;
+		final double _x = sinr * cosp * cosy - cosr * sinp * siny;
+		final double _y = cosr * sinp * cosy + sinr * cosp * siny;
+		final double _z = cosr * cosp * siny - sinr * sinp * cosy;
+		final double _w = cosr * cosp * cosy + sinr * sinp * siny;
 
-		return new Quaternion(_w, _x, _y, _z).normalize();
+		return new Quaternion(_x, _y, _z, _w).normalize();
 	}
 
 	public double getW() {
@@ -120,10 +143,6 @@ public class Quaternion {
 	}
 
 	public double[] getDoubleArray() {
-		return new double[] { w, x, y, z };
-	}
-
-	public double[] getDoubleArrayXYZW() {
 		return new double[] { x, y, z, w };
 	}
 
@@ -139,35 +158,45 @@ public class Quaternion {
 	 * @return the float[](roll,pitch,yaw) in which the angles are stored.
 	 */
 	public double[] toAngles() {
-		double[] result = new double[3];
-		double sqw = w * w;
-		double sqx = x * x;
-		double sqy = y * y;
-		double sqz = z * z;
+		final double[] result = new double[3];
+		final double sqw = w * w;
+		final double sqx = x * x;
+		final double sqy = y * y;
+		final double sqz = z * z;
 		// if normalized is one, otherwise is correction factor
-		double unit = sqx + sqy + sqz + sqw;
-		double test = x * y + z * w;
+		final double unit = sqx + sqy + sqz + sqw;
+		final double test = x * y + z * w;
 		if (test > 0.499 * unit) { // singularity at north pole
+			result[0] = 0;
 			result[1] = 2 * Math.atan2(x, w);
 			result[2] = -Math.PI / 2;
-			result[0] = 0;
 		} else if (test < -0.499 * unit) { // singularity at south pole
+			result[0] = 0;
 			result[1] = -2 * Math.atan2(x, w);
 			result[2] = Math.PI / 2;
-			result[0] = 0;
 		} else {
+			result[0] = -Math.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw);
 			result[1] = Math.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw);
 			result[2] = -Math.asin(2 * test / unit);
-			result[0] = -Math.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw);
 		}
 		return result;
 	}
 
+	public final double getRotationX() {
+		return Math.atan2((2.0 * x * w) - (2.0 * y * z), 1.0 - 2.0 * (x * x) - 2.0 * (z * z));
+	}
+
+	public final double getRotationY() {
+		return Math.atan2((2.0 * y * w) - (2.0 * x * z), 1.0 - (2.0 * y * y) - (2.0 * z * z));
+	}
+
+	public final double getRotationZ() {
+		return Math.asin((2.0 * x * y) + (2.0 * z * w));
+	}
+
 	@Override
 	public String toString() {
-		return "[roll,pitch,yaw]= " + Arrays.toString(toAngles()) + "  Q [w=" + String.format("%.4f", w) + ", x="
-				+ String.format("%.4f", x) + ", y=" + String.format("%.4f", y) + ", z=" + String.format("%.4f", z)
-				+ "]";
+		return "[roll,pitch,yaw]= " + Arrays.toString(toAngles()) + "  Q [w=" + String.format("%.4f", w) + ", x=" + String.format("%.4f", x) + ", y=" + String.format("%.4f", y) + ", z=" + String.format("%.4f", z) + "]";
 	}
 
 	@Override
@@ -187,14 +216,14 @@ public class Quaternion {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Quaternion other = (Quaternion) obj;
+		final Quaternion other = (Quaternion) obj;
 		if (Double.doubleToLongBits(w) != Double.doubleToLongBits(other.w))
 			return false;
 		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))

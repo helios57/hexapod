@@ -21,15 +21,15 @@ public class Knee {
 	}
 
 	public void calculateAngle() {
-		double[] angles = to.getOrientation().diff(from.getOrientation()).toAngles();
+		double[] angles = to.getOrientation().mulInverse(from.getOrientation()).toAngles();
 		if (yaw) {
 			angle = angles[2];
 			if (Math.abs(angles[0]) > 0.001f || Math.abs(angles[1]) > 0.001f) {
 				throw new IllegalStateException();
 			}
 		} else {
-			angle = angles[1];
-			if (Math.abs(angles[0]) > 0.001f || Math.abs(angles[2]) > 0.001f) {
+			angle = angles[0];
+			if (Math.abs(angles[1]) > 0.001f || Math.abs(angles[2]) > 0.001f) {
 				throw new IllegalStateException();
 			}
 		}

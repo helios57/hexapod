@@ -42,6 +42,13 @@ public class LegTest {
 		assertEquals(new Vector3(0, -12, 0), leg1.getEndSegment().getStartPoint());
 		assertEquals(new Vector3(0, -25, 0), leg1.getEndSegment().getEndPoint());
 		leg1.setAngles(0.0f, Math.PI / 4, -Math.PI / 2);
+		leg1.getK1().calculateAngle();
+		leg1.getK2().calculateAngle();
+		leg1.getK3().calculateAngle();
+		Assert.assertEquals(0.0f, leg1.getK1().getAngle(), 0.01);
+		Assert.assertEquals(Math.PI / 4, leg1.getK2().getAngle(), 0.01);
+		Assert.assertEquals(-Math.PI / 2, leg1.getK3().getAngle(), 0.01);
+
 		assertEquals(new Vector3(0, 0, 0), leg1.getStartSegment().getStartPoint());
 		assertEquals(new Vector3(0, 0, 0), leg1.getSegment1().getStartPoint());
 		assertEquals(new Vector3(0, -5, 0), leg1.getSegment2().getStartPoint());
