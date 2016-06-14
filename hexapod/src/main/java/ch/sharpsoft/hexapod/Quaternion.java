@@ -75,7 +75,8 @@ public class Quaternion {
 
 	public Vector3 multiply(final Vector3 vec) {
 		final Quaternion vecQuat = new Quaternion(vec.getX(), vec.getY(), vec.getZ(), 0.0f);
-		final Quaternion resQuat = multiply(vecQuat).multiply(conjugate());
+		final Quaternion normalize = normalize();
+		final Quaternion resQuat = normalize.multiply(vecQuat).multiply(normalize.conjugate());
 		return (new Vector3(resQuat.x, resQuat.y, resQuat.z));
 	}
 

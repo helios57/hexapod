@@ -180,4 +180,27 @@ public class QuternionTest {
 
 		assertEquals(0.1, o1.toAngles()[0], 0.001);
 	}
+
+	@Test
+	public void testMulInverse3() throws Exception {
+		Quaternion o1 = Quaternion.fromEuler(0.1, 0.0, 0.0);
+		Quaternion o2 = Quaternion.fromEuler(0.0, 0.2, 0.0);
+		Quaternion o12 = o1.multiply(o2);
+		o2 = o12.mulInverse(o1);
+		assertEquals(0.2, o2.toAngles()[1], 0.001);
+	}
+
+	@Test
+	public void testMulInverse4() throws Exception {
+		Quaternion o1 = Quaternion.fromEuler(0.1, 0.0, 0.0);
+		Quaternion o2 = Quaternion.fromEuler(0.0, 0.2, 0.0);
+		Quaternion o3 = Quaternion.fromEuler(0.0, 0.0, 0.3);
+
+		Quaternion o12 = o1.multiply(o2);
+		Quaternion o123 = o12.multiply(o3);
+
+		o3 = o123.mulInverse(o12);
+
+		assertEquals(0.3, o3.toAngles()[2], 0.01);
+	}
 }

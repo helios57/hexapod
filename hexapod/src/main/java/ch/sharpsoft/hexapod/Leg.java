@@ -50,6 +50,9 @@ public class Leg {
 	}
 
 	public void setAngles(double k1, double k2, double k3) {
+		this.k1.setAngle(k1);
+		this.k2.setAngle(k2);
+		this.k3.setAngle(k3);
 		Quaternion o1 = startOrientation.multiply(Quaternion.fromEuler(0.0, 0.0, k1));
 		Quaternion o2 = o1.multiply(Quaternion.fromEuler(0.0, k2, 0.0));
 		Quaternion o3 = o2.multiply(Quaternion.fromEuler(0.0, k3, 0.0));
