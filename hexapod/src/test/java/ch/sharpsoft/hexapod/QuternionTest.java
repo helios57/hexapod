@@ -203,4 +203,32 @@ public class QuternionTest {
 
 		assertEquals(0.3, o3.toAngles()[2], 0.01);
 	}
+
+	@Test
+	public void testGetDirectionX1() throws Exception {
+		Quaternion o1 = Quaternion.fromEuler(0.0, 0.0, 0.0);
+		Vector3 result = o1.getDirectionX(10);
+		assertEquals(10.0, result.getX(), 0.01);
+	}
+
+	@Test
+	public void testGetDirectionX2() throws Exception {
+		Quaternion o1 = Quaternion.fromEuler(0.0, 0.0, Math.PI / 2);
+		Vector3 result = o1.getDirectionX(10);
+		assertEquals(-10.0, result.getY(), 0.01);
+	}
+
+	@Test
+	public void testGetDirectionX3() throws Exception {
+		Quaternion o1 = Quaternion.fromEuler(0.0, 0.0, -Math.PI / 2);
+		Vector3 result = o1.getDirectionX(10);
+		assertEquals(10.0, result.getY(), 0.01);
+	}
+
+	@Test
+	public void testGetDirectionX4() throws Exception {
+		Quaternion o1 = Quaternion.fromEuler(0.0, Math.PI / 2, 0.0);
+		Vector3 result = o1.getDirectionX(10);
+		assertEquals(-10.0, result.getZ(), 0.01);
+	}
 }

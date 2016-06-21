@@ -13,7 +13,7 @@ public class LegSegment {
 	}
 
 	public Vector3 getVector() {
-		return orientation.multiply(new Vector3(length, 0, 0));
+		return orientation.getDirectionX(length);
 	}
 
 	public Vector3 getStartPoint() {
@@ -38,6 +38,10 @@ public class LegSegment {
 
 	@Override
 	public String toString() {
-		return "LegSegment [startPoint=" + startPoint + ", length=" + length + ", orientation=" + orientation + "]";
+		return "LegSegment [startPoint=" + startPoint + ", length=" + getLength() + ", orientation=" + orientation + "]";
+	}
+
+	public double getLength() {
+		return length;
 	}
 }

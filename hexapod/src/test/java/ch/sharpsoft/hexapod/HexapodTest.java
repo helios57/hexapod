@@ -15,7 +15,6 @@ public class HexapodTest {
 		LegSegment startSegment = leg1.getStartSegment();
 		Vector3 vector = startSegment.getVector();
 		Vector3 v2 = leg1.getSegment1().getVector();
-//		leg1.getK1().calculateAngle();
 		double angle = leg1.getK1().getAngle();
 		System.out.println(angle);
 		System.out.println(v2);

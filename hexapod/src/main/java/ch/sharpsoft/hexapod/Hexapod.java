@@ -1,5 +1,6 @@
 package ch.sharpsoft.hexapod;
 
+import static java.lang.Math.PI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,21 +29,23 @@ import java.util.List;
  */
 public class Hexapod {
 
-	private final static double PI = Math.PI;
 	private final static double MASS = 2000.0;
 	private final List<Leg> legs = new ArrayList<>();
 	private final Vector3 position;
 	private final Quaternion orientation;
 
 	public Hexapod() {
-		legs.add(new Leg(1, new Vector3(12, -6, 0), Quaternion.fromEuler(0.0, 0.0, PI / 4.0)));
-		legs.add(new Leg(2, new Vector3(0, -9, 0), Quaternion.fromEuler(0.0, 0.0, PI / 2.0)));
-		legs.add(new Leg(3, new Vector3(-12, -6, 0), Quaternion.fromEuler(0.0, 0.0, (3 * PI) / 4.0)));
-		legs.add(new Leg(4, new Vector3(-12, 6, 0), Quaternion.fromEuler(0.0, 0.0, (-3 * PI) / 4.0)));
-		legs.add(new Leg(5, new Vector3(0, 9, 0), Quaternion.fromEuler(0.0, 0.0, -PI / 2)));
-		legs.add(new Leg(6, new Vector3(12, 6, 0), Quaternion.fromEuler(0.0, 0.0, -PI / 4)));
-		position = new Vector3(0, 0, 0);
 		orientation = Quaternion.fromEuler(0.0, 0.0, 0.0);
+		legs.add(new Leg(1, new Vector3(12, -6, 0), PI / 4.0));
+		legs.add(new Leg(2, new Vector3(0, -9, 0), PI / 2.0));
+		legs.add(new Leg(3, new Vector3(-12, -6, 0), (3 * PI) / 4.0));
+		legs.add(new Leg(4, new Vector3(-12, 6, 0), (-3 * PI) / 4.0));
+		legs.add(new Leg(5, new Vector3(0, 9, 0), -PI / 2));
+		legs.add(new Leg(6, new Vector3(12, 6, 0), -PI / 4));
+		position = new Vector3(0, 0, 0);
+		for (final Leg leg : legs) {
+			leg.setAngles(0.0, 0.0, PI / 2);
+		}
 	}
 
 	public List<Leg> getLegs() {

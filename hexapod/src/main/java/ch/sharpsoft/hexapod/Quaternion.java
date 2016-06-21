@@ -80,6 +80,13 @@ public class Quaternion {
 		return (new Vector3(resQuat.x, resQuat.y, resQuat.z));
 	}
 
+	public Vector3 getDirectionX(double length) {
+		double vx = 1 - 2 * y * y - 2 * z * z;
+		double vy = 2 * x * y + 2 * z * w;
+		double vz = 2 * x * z - 2 * y * w;
+		return new Vector3(vx, vy, vz).multiply(length);
+	}
+
 	public static Quaternion fromAxis(final Vector3 v, final double angle) {
 		final Vector3 vn = v.normalize();
 
@@ -197,7 +204,9 @@ public class Quaternion {
 
 	@Override
 	public String toString() {
-		return "[roll,pitch,yaw]= " + Arrays.toString(toAngles()) + "  Q [w=" + String.format("%.4f", w) + ", x=" + String.format("%.4f", x) + ", y=" + String.format("%.4f", y) + ", z=" + String.format("%.4f", z) + "]";
+		double[] euler = toAngles();
+		return "[roll,pitch,yaw]= [" + String.format("%.4f", euler[0]) + "," + String.format("%.4f", euler[1]) + "," + String.format("%.4f", euler[2]) + "] Q [w=" + String.format("%.4f", w) + ", x=" + String.format("%.4f", x) + ", y="
+				+ String.format("%.4f", y) + ", z=" + String.format("%.4f", z) + "]";
 	}
 
 	@Override

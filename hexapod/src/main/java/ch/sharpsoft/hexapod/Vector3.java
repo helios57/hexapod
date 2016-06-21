@@ -1,6 +1,5 @@
 package ch.sharpsoft.hexapod;
 
-
 public class Vector3 {
 	private final double x, y, z;
 
@@ -10,8 +9,24 @@ public class Vector3 {
 		this.z = z;
 	}
 
+	public static Vector3 byYaw(double length, double yaw) {
+		double px = length * Math.cos(yaw);
+		double py = -length * Math.sin(yaw);
+		return new Vector3(px, py, 0);
+	}
+
+	public static Vector3 byPitch(double length, double pitch) {
+		double px = length * Math.cos(pitch);
+		double pz = -length * Math.sin(pitch);
+		return new Vector3(px, 0, pz);
+	}
+
 	public double norm() {
 		return Math.sqrt(x * x + y * y + z * z);
+	}
+
+	public double normSquared() {
+		return x * x + y * y + z * z;
 	}
 
 	public Vector3 normalize() {
@@ -25,6 +40,10 @@ public class Vector3 {
 
 	public Vector3 add(Vector3 plus) {
 		return new Vector3(this.x + plus.x, this.y + plus.y, this.z + plus.z);
+	}
+
+	public Vector3 multiply(double a) {
+		return new Vector3(this.x * a, this.y * a, this.z * a);
 	}
 
 	public double getX() {
@@ -41,7 +60,7 @@ public class Vector3 {
 
 	@Override
 	public String toString() {
-		return "V [x=" + x + ", y=" + y + ", z=" + z + "]";
+		return "V [x=" + String.format("%.4f", x) + ", y=" + String.format("%.4f", y) + ", z=" + String.format("%.4f", z) + "]";
 	}
 
 	@Override
