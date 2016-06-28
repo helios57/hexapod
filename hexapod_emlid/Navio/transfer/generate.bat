@@ -1,0 +1,1 @@
+"C:\workspace\emlid\protoc\protoc.exe" --cpp_out=cpp --java_out=java api.proto
