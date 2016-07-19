@@ -13,6 +13,7 @@
 #include "NavioLib/Util.h"
 #include <string>
 #include <chrono>
+#include <thread>
 
 using namespace std::chrono;
 
@@ -29,9 +30,18 @@ void IMUSender::start() {
 	imu->initialize();
 }
 void IMUSender::loop() {
-	milliseconds ms = duration_cast<milliseconds>(
+	milliseconds now = duration_cast<milliseconds>(
 			system_clock::now().time_since_epoch());
+	long long nowAsMillis = now.count();
+	//if (lastSent + 9 < nowAsMillis) {
 	imu->getMotion9(imuData);
-	imuData->set_timestamp(ms.count());
+	imuData->set_timestamp(nowAsMillis);
 	mqtt->send_message(imuData);
+	//lastSent = nowAsMillis;
+	//} else {
+	//	long long int toSleep = lastSent + 9 - 2 - nowAsMillis;
+	//	if (toSleep > 0) {
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(toSleep));
+	//	}
+//}
 }

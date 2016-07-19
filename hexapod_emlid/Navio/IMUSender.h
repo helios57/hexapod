@@ -13,6 +13,7 @@
 
 class IMUSender {
 private:
+	//long long lastSent;
 	Mqtt *mqtt;
 	MPU9250 *imu;
 	ch::sharpsoft::hexapod::transfer::IMU *imuData;

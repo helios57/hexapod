@@ -9,13 +9,20 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <cstring>
+#include <chrono>
 #include "Mqtt.h"
+
+using namespace std::chrono;
 
 Mqtt::Mqtt() :
 		mosquittopp(), buffer(0) {
 	mosqpp::lib_init();
-	connect("192.168.2.122");
-	std::cout << "connected to mqtt 192.168.2.122 \n";
+	connect("127.0.0.1");
+	std::cout << "connected to mqtt 127.0.0.1 \n";
+	//connect("192.168.2.9");
+	//std::cout << "connected to mqtt 192.168.2.9 \n";
+	//connect("192.168.2.122");
+	//std::cout << "connected to mqtt 192.168.2.122 \n";
 	//loop_start();
 }
 
@@ -45,7 +52,9 @@ bool Mqtt::send_message(const ch::sharpsoft::hexapod::transfer::IMU *imuData) {
 	return (ret == MOSQ_ERR_SUCCESS);
 }
 void Mqtt::on_message(const struct mosquitto_message *message) {
-	std::cout << message->payload;
+	milliseconds now = duration_cast<milliseconds>(
+			system_clock::now().time_since_epoch());
+	std::cout << now.count() << " " << message->payload << "\n";
 	callbacks[std::string(message->topic)](
 			static_cast<char*>(message->payload));
 }
