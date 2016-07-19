@@ -1,0 +1,1 @@
+sudo apt-get install libprotobuf-dev  libmosquittopp-dev git

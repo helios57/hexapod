@@ -44,7 +44,8 @@ public class Hexapod {
 		legs.add(new Leg(6, new Vector3(12, 6, 0), -PI / 4));
 		position = new Vector3(0, 0, 0);
 		for (final Leg leg : legs) {
-			leg.setAngles(0.0, 0.0, PI / 2);
+			leg.setAngles(0.0, 0.0, 0.0);
+			// leg.setAngles(0.0, 0.0, PI / 2);
 		}
 	}
 
