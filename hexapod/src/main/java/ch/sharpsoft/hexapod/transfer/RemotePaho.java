@@ -9,7 +9,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import ch.sharpsoft.hexapod.transfer.Api.IMU;
@@ -17,7 +16,7 @@ import ch.sharpsoft.hexapod.transfer.Api.IMU;
 public class RemotePaho implements MqttCallback, Remote {
 	private final static String TOPIC_IN_IMU = "Sensor/IMU";
 	private final static String TOPIC_OUT_SERVO = "Servo/Pos";
-	//private final static String BROKER = "tcp://127.0.0.1:1883";
+	// private final static String BROKER = "tcp://127.0.0.1:1883";
 	private final static String BROKER = "tcp://192.168.2.122:1883";
 	private final static String CLIENTID = "JavaController";
 	private final MemoryPersistence persistence = new MemoryPersistence();
@@ -27,20 +26,24 @@ public class RemotePaho implements MqttCallback, Remote {
 	public RemotePaho() {
 	}
 
-	public void init() throws MqttException, InterruptedException {
-		client = new MqttAsyncClient(BROKER, CLIENTID, persistence);
-		final MqttConnectOptions connOpts = new MqttConnectOptions();
-		connOpts.setCleanSession(true);
-		client.connect(connOpts);
-		client.setCallback(this);
-		Thread.sleep(1000);
-		client.subscribe(TOPIC_IN_IMU, 0);
+	public void init() {
+		try {
+			client = new MqttAsyncClient(BROKER, CLIENTID, persistence);
+			final MqttConnectOptions connOpts = new MqttConnectOptions();
+			connOpts.setCleanSession(true);
+			client.connect(connOpts);
+			client.setCallback(this);
+			Thread.sleep(1000);
+			client.subscribe(TOPIC_IN_IMU, 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void messageArrived(final String topic, final MqttMessage message) throws Exception {
 		if (TOPIC_IN_IMU.equals(topic)) {
 			IMU imu = IMU.parseFrom(message.getPayload());
-//			System.out.println(imu);
+			// System.out.println(imu);
 		}
 	}
 
