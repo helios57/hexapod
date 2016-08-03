@@ -1,5 +1,7 @@
 package ch.sharpsoft.hexapod;
 
+import java.util.Arrays;
+
 /**
  * <code>
  *    S
@@ -69,29 +71,41 @@ public class Leg {
 
 	public void setEndpoint(final Vector3 vector3) {
 		final Vector3 legframe = vector3.substract(startPoint);
-		final double alpha = Math.atan2(-legframe.getY(), legframe.getX()) - startYaw;
+		final double alpha = atan2(-legframe.getY(), legframe.getX()) - startYaw;
+		k1.setAngle(alpha);
 		final Quaternion o1 = startOrientation.multiply(Quaternion.fromEuler(0.0, 0.0, alpha));
 		segment1.setOrientation(o1);
-		final Vector3 rest = vector3.substract(segment1.getEndPoint());
+		final Vector3 rest = o1.conjugate().multiply(vector3.substract(segment1.getEndPoint()));
 		if (rest.norm() > segment2.getLength() + endSegment.getLength()) {
 			throw new IllegalArgumentException("Legs too short for this point " + vector3);
 		}
-
 		final double r0 = getSegment2().getLength();
 		final double r1 = getEndSegment().getLength();
-		final double d2 = rest.getX() * rest.getX() + rest.getZ() * rest.getZ();
-		final double beta = Math.atan2(-rest.getZ(), rest.getX()) - Math.acos((r0 * r0 + d2 - r1 * r1) / (2 * r0 * Math.sqrt(d2)));
+		final double phi = atan2(Math.sqrt(1 - pow2((pow2(rest.getX()) + pow2(rest.getZ()) - pow2(r0) - pow2(r1)) / (2 * r0 * r1))), (pow2(rest.getX()) + pow2(rest.getZ()) - pow2(r0) - pow2(r1)) / (2 * r0 * r1));
+		final double beta = atan2(-rest.getZ(), rest.getX()) - atan2(r1 * Math.sin(phi), r0 + r1 * Math.cos(phi));
+		k2.setAngle(beta);
 		final Quaternion o2 = o1.multiply(Quaternion.fromEuler(0.0, beta, 0.0));
 		segment2.setOrientation(o2);
 		segment2.setStartPoint(segment1.getEndPoint());
-
-		final Vector3 start = segment2.getEndPoint();
-		final Vector3 end = vector3;
-		final Vector3 diff = end.substract(start);
-		final double phi = Math.atan2(-diff.getZ(), diff.getX()) - beta;
+		k3.setAngle(phi);
 		final Quaternion o3 = o2.multiply(Quaternion.fromEuler(0.0, phi, 0.0));
 		endSegment.setOrientation(o3);
 		endSegment.setStartPoint(segment2.getEndPoint());
+	}
+
+	private double pow2(double x) {
+		return x * x;
+	}
+
+	private double atan2(double x, double y) {
+		double angle = Math.atan2(x, y);
+		if (angle < -Math.PI + 0.01) {
+			return 0;
+		}
+		if (angle > Math.PI - 0.01) {
+			return 0;
+		}
+		return angle;
 	}
 
 	public Vector3 getEndpoint() {

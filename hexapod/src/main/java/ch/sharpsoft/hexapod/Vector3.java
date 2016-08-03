@@ -60,7 +60,7 @@ public class Vector3 {
 
 	@Override
 	public String toString() {
-		return "V [x=" + String.format("%.4f", x) + ", y=" + String.format("%.4f", y) + ", z=" + String.format("%.4f", z) + "]";
+		return "V [x=" + String.format("%.4f", x) + ", y=" + String.format("%.4f", y) + ", z=" + String.format("%.4f", z) + ", l=" + String.format("%.4f", norm()) + "]";
 	}
 
 	@Override
