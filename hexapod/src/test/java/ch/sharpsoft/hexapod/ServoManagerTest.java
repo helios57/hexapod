@@ -1,9 +1,12 @@
 package ch.sharpsoft.hexapod;
 
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLCanvas;
 
 import ch.sharpsoft.hexapod.transfer.RemotePaho;
 
@@ -23,6 +32,54 @@ public class ServoManagerTest {
 		final RemotePaho remote = new RemotePaho();
 		remote.init();
 		final ServoManager sm = new ServoManager(hp, remote);
+		createUI(hp);
+		final HexapodRenderer renderer = new HexapodRenderer(hp);
+
+		GLProfile glprofile = GLProfile.getDefault();
+		GLCapabilities glcapabilities = new GLCapabilities(glprofile);
+		final GLCanvas glcanvas = new GLCanvas(glcapabilities);
+
+		glcanvas.addGLEventListener(new GLEventListener() {
+
+			@Override
+			public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
+				renderer.setup(glautodrawable.getGL().getGL2(), width, height);
+			}
+
+			@Override
+			public void init(GLAutoDrawable glautodrawable) {
+			}
+
+			@Override
+			public void dispose(GLAutoDrawable glautodrawable) {
+			}
+
+			@Override
+			public void display(GLAutoDrawable glautodrawable) {
+				renderer.render(glautodrawable.getGL().getGL2(), glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight());
+			}
+		});
+
+		final JFrame jframe = new JFrame("Hexapod GLCanvas");
+		jframe.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent windowevent) {
+				jframe.dispose();
+				System.exit(0);
+			}
+		});
+
+		jframe.getContentPane().add(glcanvas, BorderLayout.CENTER);
+		jframe.setSize(1024, 1024);
+		jframe.setVisible(true);
+
+		final double i = 0.0;
+		while (true) {
+			sm.sendState();
+			Thread.sleep(100);
+		}
+	}
+
+	private static void createUI(final Hexapod hp) {
 		final Font f = new Font(Font.SANS_SERIF, 1, 40);
 		final JFrame window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -360,12 +417,6 @@ public class ServoManagerTest {
 		window.getContentPane().add(mainframe);
 		window.pack();
 		window.setVisible(true);
-
-		final double i = 0.0;
-		while (true) {
-			sm.sendState();
-			Thread.sleep(100);
-		}
 	}
 
 	public static void reload() {
