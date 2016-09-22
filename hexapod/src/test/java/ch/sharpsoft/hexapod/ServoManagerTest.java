@@ -33,46 +33,7 @@ public class ServoManagerTest {
 		remote.init();
 		final ServoManager sm = new ServoManager(hp, remote);
 		createUI(hp);
-		final HexapodRenderer renderer = new HexapodRenderer(hp);
-
-		GLProfile glprofile = GLProfile.getDefault();
-		GLCapabilities glcapabilities = new GLCapabilities(glprofile);
-		final GLCanvas glcanvas = new GLCanvas(glcapabilities);
-
-		glcanvas.addGLEventListener(new GLEventListener() {
-
-			@Override
-			public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
-				renderer.setup(glautodrawable.getGL().getGL2(), width, height);
-			}
-
-			@Override
-			public void init(GLAutoDrawable glautodrawable) {
-			}
-
-			@Override
-			public void dispose(GLAutoDrawable glautodrawable) {
-			}
-
-			@Override
-			public void display(GLAutoDrawable glautodrawable) {
-				renderer.render(glautodrawable.getGL().getGL2(), glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight());
-			}
-		});
-
-		final JFrame jframe = new JFrame("Hexapod GLCanvas");
-		jframe.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent windowevent) {
-				jframe.dispose();
-				System.exit(0);
-			}
-		});
-
-		jframe.getContentPane().add(glcanvas, BorderLayout.CENTER);
-		jframe.setSize(1024, 1024);
-		jframe.setVisible(true);
-
-		final double i = 0.0;
+		new HexapodRenderer(hp);
 		while (true) {
 			sm.sendState();
 			Thread.sleep(100);
