@@ -45,12 +45,25 @@ public class Hexapod {
 		position = new Vector3(0, 0, 0);
 		for (final Leg leg : legs) {
 			leg.setAngles(0.0, 0.0, 0.0);
-			// leg.setAngles(0.0, 0.0, PI / 2);
 		}
 	}
 
 	public List<Leg> getLegs() {
 		return legs;
+	}
+
+	public List<Vector3> getEndpoints() {
+		List<Vector3> result = new ArrayList<>();
+		legs.forEach(l -> result.add(l.getEndpoint()));
+		return result;
+	}
+
+	public List<Vector3> setEndpoints(List<Vector3> endpoints) {
+		for (int i = 0; i < endpoints.size(); i++) {
+			Vector3 vector3 = endpoints.get(i);
+			legs.get(i).setEndpoint(vector3);
+		}
+		return getEndpoints();
 	}
 
 	public Vector3 getPosition() {

@@ -1,8 +1,11 @@
 package ch.sharpsoft.hexapod;
 
+import static org.junit.Assert.*;
+
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,9 +57,60 @@ public class HexapodTest {
 		}
 	}
 
+	@Test
+	public void testSetEndpointZ() throws Exception {
+		Hexapod hp = new Hexapod();
+		hp.getLegs().forEach(l -> l.setAngles(0.0, 0.7, 0.5));
+		List<Vector3> endpoints = hp.getEndpoints();
+		endpoints.forEach(System.out::println);
+		List<Vector3> newEndpoints = endpoints.stream().map(e -> //
+		//
+		new Vector3(e.getX(), e.getY(), e.getZ() + 1.0f)//
+		//
+		).collect(Collectors.toList());
+		hp.setEndpoints(newEndpoints);
+		endpoints = hp.getEndpoints();
+		System.out.println();
+		endpoints.forEach(System.out::println);
+	}
+
+	@Test
+	public void testSetEndpointY() throws Exception {
+		Hexapod hp = new Hexapod();
+		hp.getLegs().forEach(l -> l.setAngles(0.0, 0.7, 0.5));
+		List<Vector3> endpoints = hp.getEndpoints();
+		endpoints.forEach(System.out::println);
+		List<Vector3> newEndpoints = endpoints.stream().map(e -> //
+		//
+		new Vector3(e.getX(), e.getY() + 1f, e.getZ())//
+		//
+		).collect(Collectors.toList());
+		hp.setEndpoints(newEndpoints);
+		endpoints = hp.getEndpoints();
+		System.out.println();
+		endpoints.forEach(System.out::println);
+	}
+
+	@Test
+	public void testSetEndpointX() throws Exception {
+		Hexapod hp = new Hexapod();
+		hp.getLegs().forEach(l -> l.setAngles(0.0, 0.7, 0.5));
+		List<Vector3> endpoints = hp.getEndpoints();
+		endpoints.forEach(System.out::println);
+		List<Vector3> newEndpoints = endpoints.stream().map(e -> //
+		//
+		new Vector3(e.getX() + 1f, e.getY(), e.getZ())//
+		//
+		).collect(Collectors.toList());
+		hp.setEndpoints(newEndpoints);
+		endpoints = hp.getEndpoints();
+		System.out.println();
+		endpoints.forEach(System.out::println);
+	}
+
 	private void assertEquals(Vector3 v1, Vector3 v2) {
-		Assert.assertEquals("X", v1.getX(), v2.getX(), 0.02);
-		Assert.assertEquals("Y", v1.getY(), v2.getY(), 0.02);
-		Assert.assertEquals("Z", v1.getZ(), v2.getZ(), 0.02);
+		Assert.assertEquals("X", v1.getX(), v2.getX(), 0.03);
+		Assert.assertEquals("Y", v1.getY(), v2.getY(), 0.03);
+		Assert.assertEquals("Z", v1.getZ(), v2.getZ(), 0.03);
 	}
 }
