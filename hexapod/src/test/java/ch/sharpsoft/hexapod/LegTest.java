@@ -1,5 +1,7 @@
 package ch.sharpsoft.hexapod;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -93,6 +95,35 @@ public class LegTest {
 		leg.setEndpoint(endpoint);
 		Vector3 calculated = leg.getEndpoint();
 		assertEquals(endpoint, calculated);
+	}
+
+	/**
+	 * Each box has 8 Points around it's vector. <code>
+	 *        (+z)
+	 *         . b1(+y)    . b5
+	 * (-y)b0 '        b4 ' 
+	 *        |           |
+	 *        s - - - - ->e
+	 *        |           |
+	 *     b2 .        b6 .
+	 *         ' b3        ' b7
+	 *       (-z)
+	 * </code>
+	 */
+	@Test
+	public void testBoundingBoxes() {
+		Leg l = new Leg(1, new Vector3(0.0, 0.0, 0.0), 0.0);
+		List<List<Vector3>> boundingBoxes = l.getBoundingBoxes();
+		Assert.assertEquals(3, boundingBoxes.size());
+		for (List<Vector3> list : boundingBoxes) {
+			Assert.assertEquals(8, list.size());
+		}
+		List<Vector3> box0 = boundingBoxes.get(0);
+		assertEquals(new Vector3(0, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box0.get(0));
+		assertEquals(new Vector3(0, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box0.get(1));
+		assertEquals(new Vector3(0, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box0.get(2));
+		assertEquals(new Vector3(0, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box0.get(3));
+
 	}
 
 	private void assertEquals(Vector3 v1, Vector3 v2) {

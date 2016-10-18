@@ -28,8 +28,8 @@ import java.util.List;
  * breite = 5.5cm höhe = 4cm
  */
 public class Leg {
-	private final static double width = 5.5;
-	private final static double height = 4;
+	public final static double WIDTH = 5.5;
+	public final static double HEIGHT = 4;
 	private final int id;
 	private final Vector3 startPoint;
 	private final Quaternion startOrientation;
@@ -79,7 +79,17 @@ public class Leg {
 	}
 
 	/**
-	 * 
+	 * Each box has 8 Points around it's vector. <code>
+	 *        (+z)
+	 *         . b1(+y)    . b5
+	 * (-y)b0 '        b4 ' 
+	 *        |           |
+	 *        s - - - - ->e
+	 *        |           |
+	 *     b2 .        b6 .
+	 *         ' b3        ' b7
+	 *       (-z)
+	 * </code>
 	 */
 	public List<List<Vector3>> getBoundingBoxes() {
 		List<List<Vector3>> result = new ArrayList<>();
@@ -108,7 +118,9 @@ public class Leg {
 		}
 		final double r0 = getSegment2().getLength();
 		final double r1 = getEndSegment().getLength();
-		final double phi = atan2(Math.sqrt(1 - pow2((pow2(rest.getX()) + pow2(rest.getZ()) - pow2(r0) - pow2(r1)) / (2 * r0 * r1))), (pow2(rest.getX()) + pow2(rest.getZ()) - pow2(r0) - pow2(r1)) / (2 * r0 * r1));
+		final double phi = atan2(
+				Math.sqrt(1 - pow2((pow2(rest.getX()) + pow2(rest.getZ()) - pow2(r0) - pow2(r1)) / (2 * r0 * r1))),
+				(pow2(rest.getX()) + pow2(rest.getZ()) - pow2(r0) - pow2(r1)) / (2 * r0 * r1));
 		final double beta = atan2(-rest.getZ(), rest.getX()) - atan2(r1 * Math.sin(phi), r0 + r1 * Math.cos(phi));
 		k2.setAngle(beta);
 		final Quaternion o2 = o1.multiply(Quaternion.fromEuler(0.0, beta, 0.0));
@@ -181,7 +193,8 @@ public class Leg {
 
 	@Override
 	public String toString() {
-		return "\nLeg [id=" + id + ", startPoint=" + startPoint + ", startOrientation=" + startOrientation + ", startSegment=" + startSegment + ", segment1=" + segment1 + ", segment2=" + segment2 + ", endSegment=" + endSegment + ", k1="
-				+ k1 + ", k2=" + k2 + ", k3=" + k3 + "]";
+		return "\nLeg [id=" + id + ", startPoint=" + startPoint + ", startOrientation=" + startOrientation
+				+ ", startSegment=" + startSegment + ", segment1=" + segment1 + ", segment2=" + segment2
+				+ ", endSegment=" + endSegment + ", k1=" + k1 + ", k2=" + k2 + ", k3=" + k3 + "]";
 	}
 }
