@@ -94,16 +94,40 @@ public class Leg {
 	public List<List<Vector3>> getBoundingBoxes() {
 		List<List<Vector3>> result = new ArrayList<>();
 
-		Vector3 s = startSegment.getStartPoint();
-		Vector3 e = startSegment.getEndPoint();
+		// Vector3 s = startSegment.getStartPoint();
+		// Vector3 e = startSegment.getEndPoint();
 
-		Vector3 v = e.substract(s);
-		Quaternion.fromAxis(v, -1.0 * (Math.PI / 4));
-		Quaternion.fromAxis(v, 3.0 * (Math.PI / 4));
-		Quaternion.fromAxis(v, -3.0 * (Math.PI / 4));
-		Quaternion.fromAxis(v, -1.0 * (Math.PI / 4));
+		// Vector3 v = e.substract(s);
 
+		List<Vector3> base = new ArrayList<>();
+		base.add(new Vector3(0, -WIDTH / 2, HEIGHT / 2));
+		base.add(new Vector3(0, WIDTH / 2, HEIGHT / 2));
+		base.add(new Vector3(0, -WIDTH / 2, -HEIGHT / 2));
+		base.add(new Vector3(0, WIDTH / 2, -HEIGHT / 2));
+
+		List<Vector3> s0 = getBoundingBoxOfSegment(base, startSegment);
+		List<Vector3> s1 = getBoundingBoxOfSegment(base, segment1);
+		List<Vector3> s2 = getBoundingBoxOfSegment(base, segment2);
+		List<Vector3> s3 = getBoundingBoxOfSegment(base, endSegment);
+		result.add(s0);
+		result.add(s1);
+		result.add(s2);
+		result.add(s3);
+
+		//
+		// Quaternion.fromAxis(v, -1.0 * (Math.PI / 4));
+		// Quaternion.fromAxis(v, 3.0 * (Math.PI / 4));
+		// Quaternion.fromAxis(v, -3.0 * (Math.PI / 4));
+		// Quaternion.fromAxis(v, -1.0 * (Math.PI / 4));
+		//
 		return result;
+	}
+
+	private List<Vector3> getBoundingBoxOfSegment(List<Vector3> base, LegSegment s) {
+		List<Vector3> s0 = new ArrayList<>();
+		base.forEach(b -> s0.add(s.getOrientation().multiply(b).add(s.getStartPoint())));
+		base.forEach(b -> s0.add(s.getOrientation().multiply(b).add(s.getEndPoint())));
+		return s0;
 	}
 
 	public void setEndpoint(final Vector3 vector3) {
