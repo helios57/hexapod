@@ -1,6 +1,7 @@
 package ch.sharpsoft.hexapod;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <code>
@@ -23,8 +24,12 @@ import java.util.Arrays;
  *         |
  *         E       
  * </code>
+ * 
+ * breite = 5.5cm höhe = 4cm
  */
 public class Leg {
+	private final static double width = 5.5;
+	private final static double height = 4;
 	private final int id;
 	private final Vector3 startPoint;
 	private final Quaternion startOrientation;
@@ -67,6 +72,28 @@ public class Leg {
 
 	public double[] getAngles() {
 		return new double[] { k1.getAngle(), k2.getAngle(), k3.getAngle() };
+	}
+
+	public boolean intercept(final Leg leg) {
+		return false;
+	}
+
+	/**
+	 * 
+	 */
+	public List<List<Vector3>> getBoundingBoxes() {
+		List<List<Vector3>> result = new ArrayList<>();
+
+		Vector3 s = startSegment.getStartPoint();
+		Vector3 e = startSegment.getEndPoint();
+
+		Vector3 v = e.substract(s);
+		Quaternion.fromAxis(v, -1.0 * (Math.PI / 4));
+		Quaternion.fromAxis(v, 3.0 * (Math.PI / 4));
+		Quaternion.fromAxis(v, -3.0 * (Math.PI / 4));
+		Quaternion.fromAxis(v, -1.0 * (Math.PI / 4));
+
+		return result;
 	}
 
 	public void setEndpoint(final Vector3 vector3) {
