@@ -42,6 +42,14 @@ public class Leg {
 	private final Knee k3;
 	private final double startYaw;
 
+	private final static List<Vector3> base = new ArrayList<>();
+	static {
+		base.add(new Vector3(0, -WIDTH / 2, HEIGHT / 2));
+		base.add(new Vector3(0, WIDTH / 2, HEIGHT / 2));
+		base.add(new Vector3(0, -WIDTH / 2, -HEIGHT / 2));
+		base.add(new Vector3(0, WIDTH / 2, -HEIGHT / 2));
+	}
+
 	public Leg(final int id, final Vector3 startPoint, final double startYaw) {
 		this.id = id;
 		this.startYaw = startYaw;
@@ -93,33 +101,9 @@ public class Leg {
 	 */
 	public List<List<Vector3>> getBoundingBoxes() {
 		List<List<Vector3>> result = new ArrayList<>();
-
-		// Vector3 s = startSegment.getStartPoint();
-		// Vector3 e = startSegment.getEndPoint();
-
-		// Vector3 v = e.substract(s);
-
-		List<Vector3> base = new ArrayList<>();
-		base.add(new Vector3(0, -WIDTH / 2, HEIGHT / 2));
-		base.add(new Vector3(0, WIDTH / 2, HEIGHT / 2));
-		base.add(new Vector3(0, -WIDTH / 2, -HEIGHT / 2));
-		base.add(new Vector3(0, WIDTH / 2, -HEIGHT / 2));
-
-		List<Vector3> s0 = getBoundingBoxOfSegment(base, startSegment);
-		List<Vector3> s1 = getBoundingBoxOfSegment(base, segment1);
-		List<Vector3> s2 = getBoundingBoxOfSegment(base, segment2);
-		List<Vector3> s3 = getBoundingBoxOfSegment(base, endSegment);
-		result.add(s0);
-		result.add(s1);
-		result.add(s2);
-		result.add(s3);
-
-		//
-		// Quaternion.fromAxis(v, -1.0 * (Math.PI / 4));
-		// Quaternion.fromAxis(v, 3.0 * (Math.PI / 4));
-		// Quaternion.fromAxis(v, -3.0 * (Math.PI / 4));
-		// Quaternion.fromAxis(v, -1.0 * (Math.PI / 4));
-		//
+		result.add(getBoundingBoxOfSegment(base, segment1));
+		result.add(getBoundingBoxOfSegment(base, segment2));
+		result.add(getBoundingBoxOfSegment(base, endSegment));
 		return result;
 	}
 

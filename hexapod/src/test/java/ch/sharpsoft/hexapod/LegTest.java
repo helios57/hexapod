@@ -114,7 +114,7 @@ public class LegTest {
 	public void testBoundingBoxes() {
 		Leg l = new Leg(1, new Vector3(0.0, 0.0, 0.0), 0.0);
 		List<List<Vector3>> boundingBoxes = l.getBoundingBoxes();
-		Assert.assertEquals(4, boundingBoxes.size());
+		Assert.assertEquals(3, boundingBoxes.size());
 		for (List<Vector3> list : boundingBoxes) {
 			Assert.assertEquals(8, list.size());
 		}
@@ -124,21 +124,11 @@ public class LegTest {
 		assertEquals(new Vector3(0, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(2));
 		assertEquals(new Vector3(0, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(3));
 
-		assertEquals(new Vector3(0, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(4));
-		assertEquals(new Vector3(0, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(5));
-		assertEquals(new Vector3(0, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(6));
-		assertEquals(new Vector3(0, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(7));
-
-		box = boundingBoxes.get(1);
-		assertEquals(new Vector3(0, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(0));
-		assertEquals(new Vector3(0, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(1));
-		assertEquals(new Vector3(0, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(2));
-		assertEquals(new Vector3(0, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(3));
-
-		assertEquals(new Vector3(l.getSegment1().getLength(), -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(4));
-		assertEquals(new Vector3(l.getSegment1().getLength(), +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(5));
-		assertEquals(new Vector3(l.getSegment1().getLength(), -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(6));
-		assertEquals(new Vector3(l.getSegment1().getLength(), +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(7));
+		double length1 = l.getSegment1().getLength();
+		assertEquals(new Vector3(length1, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(4));
+		assertEquals(new Vector3(length1, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(5));
+		assertEquals(new Vector3(length1, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(6));
+		assertEquals(new Vector3(length1, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(7));
 
 	}
 
