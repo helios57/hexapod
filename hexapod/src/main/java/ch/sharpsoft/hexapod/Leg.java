@@ -41,6 +41,7 @@ public class Leg {
 	private final Knee k2;
 	private final Knee k3;
 	private final double startYaw;
+	private final double maxLength;
 
 	private final static List<Vector3> base = new ArrayList<>();
 	static {
@@ -62,6 +63,7 @@ public class Leg {
 		k1 = new Knee(startSegment, segment1, true);
 		k2 = new Knee(segment1, segment2, false);
 		k3 = new Knee(segment2, endSegment, false);
+		maxLength = segment1.getLength() + segment2.getLength() + endSegment.getLength();
 	}
 
 	public void setAngles(final double k1, final double k2, final double k3) {
@@ -80,10 +82,6 @@ public class Leg {
 
 	public double[] getAngles() {
 		return new double[] { k1.getAngle(), k2.getAngle(), k3.getAngle() };
-	}
-
-	public boolean intercept(final Leg leg) {
-		return false;
 	}
 
 	/**
@@ -204,5 +202,9 @@ public class Leg {
 		return "\nLeg [id=" + id + ", startPoint=" + startPoint + ", startOrientation=" + startOrientation
 				+ ", startSegment=" + startSegment + ", segment1=" + segment1 + ", segment2=" + segment2
 				+ ", endSegment=" + endSegment + ", k1=" + k1 + ", k2=" + k2 + ", k3=" + k3 + "]";
+	}
+
+	public double getMaxLength() {
+		return maxLength;
 	}
 }
