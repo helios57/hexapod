@@ -111,8 +111,12 @@ public class LegTest {
 	 * </code>
 	 */
 	@Test
-	public void testBoundingBoxes() {
+	public void testBoundingBoxesStraight() {
 		Leg l = new Leg(1, new Vector3(0.0, 0.0, 0.0), 0.0);
+		double l1 = l.getSegment1().getLength();
+		double l2 = l.getSegment2().getLength();
+		double l3 = l.getEndSegment().getLength();
+
 		List<List<Vector3>> boundingBoxes = l.getBoundingBoxes();
 		Assert.assertEquals(3, boundingBoxes.size());
 		for (List<Vector3> list : boundingBoxes) {
@@ -124,12 +128,91 @@ public class LegTest {
 		assertEquals(new Vector3(0, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(2));
 		assertEquals(new Vector3(0, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(3));
 
-		double length1 = l.getSegment1().getLength();
-		assertEquals(new Vector3(length1, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(4));
-		assertEquals(new Vector3(length1, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(5));
-		assertEquals(new Vector3(length1, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(6));
-		assertEquals(new Vector3(length1, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(7));
+		assertEquals(new Vector3(l1, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(4));
+		assertEquals(new Vector3(l1, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(5));
+		assertEquals(new Vector3(l1, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(6));
+		assertEquals(new Vector3(l1, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(7));
 
+		box = boundingBoxes.get(1);
+		assertEquals(new Vector3(l1, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(0));
+		assertEquals(new Vector3(l1, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(1));
+		assertEquals(new Vector3(l1, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(2));
+		assertEquals(new Vector3(l1, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(3));
+
+		assertEquals(new Vector3(l1 + l2, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(4));
+		assertEquals(new Vector3(l1 + l2, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(5));
+		assertEquals(new Vector3(l1 + l2, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(6));
+		assertEquals(new Vector3(l1 + l2, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(7));
+
+		box = boundingBoxes.get(2);
+		assertEquals(new Vector3(l1 + l2, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(0));
+		assertEquals(new Vector3(l1 + l2, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(1));
+		assertEquals(new Vector3(l1 + l2, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(2));
+		assertEquals(new Vector3(l1 + l2, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(3));
+
+		assertEquals(new Vector3(l1 + l2 + l3, -Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(4));
+		assertEquals(new Vector3(l1 + l2 + l3, +Leg.WIDTH / 2.0, +Leg.HEIGHT / 2), box.get(5));
+		assertEquals(new Vector3(l1 + l2 + l3, -Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(6));
+		assertEquals(new Vector3(l1 + l2 + l3, +Leg.WIDTH / 2.0, -Leg.HEIGHT / 2), box.get(7));
+	}
+
+	/**
+	 * Each box has 8 Points around it's vector. <code>
+	 *        (+z)
+	 *         . b1(+y)    . b5
+	 * (-y)b0 '        b4 ' 
+	 *        |           |
+	 *        s - - - - ->e
+	 *        |           |
+	 *     b2 .        b6 .
+	 *         ' b3        ' b7
+	 *       (-z)
+	 * </code>
+	 */
+	@Test
+	public void testBoundingBoxesPi_2() {
+		Leg l = new Leg(1, new Vector3(0.0, 0.0, 0.0), Math.PI / 2);
+		double l1 = l.getSegment1().getLength();
+		double l2 = l.getSegment2().getLength();
+		double l3 = l.getEndSegment().getLength();
+
+		List<List<Vector3>> boundingBoxes = l.getBoundingBoxes();
+		Assert.assertEquals(3, boundingBoxes.size());
+		for (List<Vector3> list : boundingBoxes) {
+			Assert.assertEquals(8, list.size());
+		}
+		List<Vector3> box = boundingBoxes.get(0);
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, 0, +Leg.HEIGHT / 2), box.get(0));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, 0, +Leg.HEIGHT / 2), box.get(1));
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, 0, -Leg.HEIGHT / 2), box.get(2));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, 0, -Leg.HEIGHT / 2), box.get(3));
+
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1, +Leg.HEIGHT / 2), box.get(4));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1, +Leg.HEIGHT / 2), box.get(5));
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1, -Leg.HEIGHT / 2), box.get(6));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1, -Leg.HEIGHT / 2), box.get(7));
+
+		box = boundingBoxes.get(1);
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1, +Leg.HEIGHT / 2), box.get(0));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1, +Leg.HEIGHT / 2), box.get(1));
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1, -Leg.HEIGHT / 2), box.get(2));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1, -Leg.HEIGHT / 2), box.get(3));
+
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1 - l2, +Leg.HEIGHT / 2), box.get(4));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1 - l2, +Leg.HEIGHT / 2), box.get(5));
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1 - l2, -Leg.HEIGHT / 2), box.get(6));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1 - l2, -Leg.HEIGHT / 2), box.get(7));
+
+		box = boundingBoxes.get(2);
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1 - l2, +Leg.HEIGHT / 2), box.get(0));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1 - l2, +Leg.HEIGHT / 2), box.get(1));
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1 - l2, -Leg.HEIGHT / 2), box.get(2));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1 - l2, -Leg.HEIGHT / 2), box.get(3));
+
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1 - l2 - l3, +Leg.HEIGHT / 2), box.get(4));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1 - l2 - l3, +Leg.HEIGHT / 2), box.get(5));
+		assertEquals(new Vector3(-Leg.WIDTH / 2.0, -l1 - l2 - l3, -Leg.HEIGHT / 2), box.get(6));
+		assertEquals(new Vector3(+Leg.WIDTH / 2.0, -l1 - l2 - l3, -Leg.HEIGHT / 2), box.get(7));
 	}
 
 	private void assertEquals(Vector3 v1, Vector3 v2) {

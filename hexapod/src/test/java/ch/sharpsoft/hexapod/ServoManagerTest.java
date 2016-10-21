@@ -1,12 +1,9 @@
 package ch.sharpsoft.hexapod;
 
-import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,12 +11,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.GLProfile;
-import com.jogamp.opengl.awt.GLCanvas;
 
 import ch.sharpsoft.hexapod.transfer.RemotePaho;
 
@@ -41,10 +32,10 @@ public class ServoManagerTest {
 	}
 
 	private static void createUI(final Hexapod hp) {
-		final Font f = new Font(Font.SANS_SERIF, 1, 40);
+		final Font f = new Font(Font.SANS_SERIF, 1, 15);
 		final JFrame window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setBounds(0, 0, 1024, 1024);
+		window.setBounds(0, 0, 1024, 600);
 		final JPanel mainframe = new JPanel();
 		mainframe.setLayout(new GridLayout(12, 1));
 		for (final Leg l : hp.getLegs()) {
@@ -374,7 +365,6 @@ public class ServoManagerTest {
 
 			mainframe.add(line);
 		}
-
 		window.getContentPane().add(mainframe);
 		window.pack();
 		window.setVisible(true);

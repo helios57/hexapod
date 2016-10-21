@@ -3,6 +3,7 @@ package ch.sharpsoft.hexapod;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -24,22 +25,42 @@ public class HexapodRenderer {
 		open();
 	}
 
+	/**
+	 * Each box has 8 Points around it's vector. <code>
+	 *        (+z)
+	 *         . b1(+y)    . b5
+	 * (-y)b0 '        b4 ' 
+	 *        |           |
+	 *        s - - - - ->e
+	 *        |           |
+	 *     b2 .        b6 .
+	 *         ' b3        ' b7
+	 *       (-z)
+	 *
+	 * </code>
+	 */
+
 	private void render(GL2 gl2) {
 		for (Leg l : hp.getLegs()) {
-			gl2.glBegin(GL.GL_LINE_LOOP);
-			gl2.glColor3f(1.0f, 1.0f, 1.0f);
-			Vector3 p0 = l.getSegment1().getStartPoint();
-			Vector3 p1 = l.getSegment1().getEndPoint();
-			Vector3 p2 = l.getSegment2().getEndPoint();
-			Vector3 p3 = l.getEndSegment().getEndPoint();
-			push(gl2, p0);
-			push(gl2, p1);
-			push(gl2, p2);
-			push(gl2, p3);
-			push(gl2, p2);
-			push(gl2, p1);
-			gl2.glEnd();
+			for (List<Vector3> box : l.getBoundingBoxes()) {
+				pushBox(gl2, box);
+			}
 		}
+	}
+
+	private void pushBox(GL2 gl2, List<Vector3> box1) {
+		pushIndex(gl2, box1, 2, 3, 0, 1, 4, 5, 6, 7, 2, 3);
+		pushIndex(gl2, box1, 1, 3, 5, 7);
+		pushIndex(gl2, box1, 6, 4, 2, 0);
+	}
+
+	private void pushIndex(GL2 gl2, List<Vector3> list, int... index) {
+		gl2.glBegin(GL.GL_TRIANGLE_STRIP);
+		gl2.glColor3f(0.7f, 0.7f, 1.0f);
+		for (int i : index) {
+			push(gl2, list.get(i));
+		}
+		gl2.glEnd();
 	}
 
 	private void push(GL2 gl2, Vector3 v) {
@@ -108,7 +129,7 @@ public class HexapodRenderer {
 				gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 				// Reset the current matrix to the "identity"
 				gl.glLoadIdentity();
-				glu.gluLookAt(40, 0, 0, // eye pos
+				glu.gluLookAt(40, 0, 40, // eye pos
 						0, 0, 0, // look at
 						0, 0, 1); // up
 
