@@ -13,6 +13,7 @@ public class ServoManager {
 	private final int[] calibration;
 	private final int[] usedServos = { 2, 3, 4, 7, 8, 9, 11, 12, 13, 27, 28, 29, 23, 24, 25, 18, 19, 20 };
 	private final Remote remote;
+	private int moveTime = 0;
 
 	public ServoManager(final Hexapod hp, final Remote remote) {
 		this.hp = hp;
@@ -38,6 +39,8 @@ public class ServoManager {
 			}
 		}
 		if (!sb.toString().isEmpty()) {
+			sb.append("t");
+			sb.append(moveTime);
 			sb.append("\r\n");
 			System.out.println(sb.toString());
 			if (!remote.sendServoPosition(sb.toString())) {
@@ -95,5 +98,13 @@ public class ServoManager {
 			return 2500;
 		}
 		return result;
+	}
+
+	public int getMoveTime() {
+		return moveTime;
+	}
+
+	public void setMoveTime(int moveTime) {
+		this.moveTime = moveTime;
 	}
 }
