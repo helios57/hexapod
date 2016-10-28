@@ -25,13 +25,14 @@ public class ServoManagerTest {
 		final ServoManager sm = new ServoManager(hp, remote);
 		createUI(hp);
 		new HexapodRenderer(hp);
-		WalkSimple walkSimple = new WalkSimple(hp);
+		WalkSafe walkSimple = new WalkSafe(hp);
+		// WalkSimple walkSimple = new WalkSimple(hp);
 		while (true) {
 			try {
 				walkSimple.setDirection(new Vector3(1, 0, 0));
 				walkSimple.doNextAction();
 				// sm.sendState();
-				// Thread.sleep(1000);
+				Thread.sleep(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

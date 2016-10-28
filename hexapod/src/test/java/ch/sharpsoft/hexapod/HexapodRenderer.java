@@ -22,7 +22,7 @@ import com.jogamp.opengl.util.Animator;
 
 public class HexapodRenderer {
 	Hexapod hp;
-	int eyeX = 10;
+	int eyeX = 40;
 	int eyeY = 0;
 	int eyeZ = 40;
 
