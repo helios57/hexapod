@@ -25,7 +25,8 @@ public class ServoManagerTest {
 		final ServoManager sm = new ServoManager(hp, remote);
 		createUI(hp);
 		new HexapodRenderer(hp);
-		WalkSimple walkSimple = new WalkSimple(hp);
+		WalkSafe walkSimple = new WalkSafe(hp);
+		// WalkSimple walkSimple = new WalkSimple(hp);
 		walkSimple.setDirection(new Vector3(1, 0, 0));
 		while (true) {
 			int delay = 1000;
