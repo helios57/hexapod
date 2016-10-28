@@ -28,10 +28,10 @@ public class ServoManagerTest {
 		WalkSimple walkSimple = new WalkSimple(hp);
 		while (true) {
 			try {
-				walkSimple.setDirection(new Vector3(0.5, 0.5, 0));
+				walkSimple.setDirection(new Vector3(1, 0, 0));
 				walkSimple.doNextAction();
-				sm.sendState();
-				Thread.sleep(100);
+				// sm.sendState();
+				// Thread.sleep(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
