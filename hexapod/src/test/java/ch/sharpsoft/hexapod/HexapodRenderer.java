@@ -1,6 +1,9 @@
 package ch.sharpsoft.hexapod;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -19,6 +22,9 @@ import com.jogamp.opengl.util.Animator;
 
 public class HexapodRenderer {
 	Hexapod hp;
+	int eyeX = 10;
+	int eyeY = 0;
+	int eyeZ = 40;
 
 	public HexapodRenderer(Hexapod hp) {
 		this.hp = hp;
@@ -71,6 +77,23 @@ public class HexapodRenderer {
 		GLProfile glprofile = GLProfile.getDefault();
 		GLCapabilities glcapabilities = new GLCapabilities(glprofile);
 		final GLCanvas glcanvas = new GLCanvas(glcapabilities);
+
+		glcanvas.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				super.mouseClicked(e);
+			}
+		});
+
+		glcanvas.addMouseMotionListener(new MouseMotionAdapter() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				// e.getX()
+			}
+		});
 
 		glcanvas.addGLEventListener(new GLEventListener() {
 
@@ -129,9 +152,9 @@ public class HexapodRenderer {
 				gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 				// Reset the current matrix to the "identity"
 				gl.glLoadIdentity();
-				glu.gluLookAt(40, 0, 40, // eye pos
-						0, 0, 0, // look at
-						0, 0, 1); // up
+				glu.gluLookAt(eyeX, eyeY, eyeZ, // eye pos
+						eyeY, eyeY, eyeY, // look at
+						eyeY, eyeY, 1); // up
 
 				// gl.glRotatef(50.0f, 0.0f, 0.0f, 1.0f);
 				// gl.glRotatef(40.0f, 1.0f, 0.0f, 0.0f);
