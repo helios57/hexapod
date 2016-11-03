@@ -1,7 +1,5 @@
 package ch.sharpsoft.hexapod;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 public class WalkSafeTest {
