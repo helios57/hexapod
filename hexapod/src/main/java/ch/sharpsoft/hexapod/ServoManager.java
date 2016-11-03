@@ -89,7 +89,7 @@ public class ServoManager {
 	}
 
 	private int angleToPulse(final double angleInRadiant) {
-		double factor = 1950 / Math.PI;
+		double factor = 2000 / Math.PI;
 		int result = 1500 + (int) (angleInRadiant * factor);
 		if (result < 500) {
 			return 500;
