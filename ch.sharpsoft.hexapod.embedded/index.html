@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head lang="de">
+<meta charset="UTF-8">
+<title>Hexapod</title>
+</head>
+<body>
+	<div id="wrapper">
+		<p>Hi</p>
+	</div>
+	<script>
+var websocket = new WebSocket('ws://127.0.0.1');
+websocket.onmessage = function(str) {
+  console.log("Someone sent: ", str);
+};
+setTimeout( () => {
+  console.log(websocket.readyState);
+  websocket.send("Hi from Website");
+}, 100);
+	</script>
+</body>
+</html>

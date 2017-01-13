@@ -1,0 +1,50 @@
+package ch.sharpsoft.hexapod;
+
+import ch.sharpsoft.hexapod.util.Quaternion;
+import ch.sharpsoft.hexapod.util.Vector3;
+
+public class LegSegment {
+
+	private Vector3 startPoint;
+	private Quaternion orientation;
+	private final double length;
+
+	public LegSegment(Vector3 startPoint, double length, Quaternion orientation) {
+		this.startPoint = startPoint;
+		this.length = length;
+		this.orientation = orientation;
+	}
+
+	public Vector3 getVector() {
+		return orientation.getDirectionX(length);
+	}
+
+	public Vector3 getStartPoint() {
+		return startPoint;
+	}
+
+	public void setStartPoint(Vector3 startPoint) {
+		this.startPoint = startPoint;
+	}
+
+	public Vector3 getEndPoint() {
+		return startPoint.add(getVector());
+	}
+
+	public Quaternion getOrientation() {
+		return orientation;
+	}
+
+	public void setOrientation(Quaternion orientation) {
+		this.orientation = orientation;
+	}
+
+	@Override
+	public String toString() {
+		return "LegSegment [startPoint=" + startPoint + ", length=" + getLength() + ", orientation=" + orientation + "]";
+	}
+
+	public double getLength() {
+		return length;
+	}
+}
