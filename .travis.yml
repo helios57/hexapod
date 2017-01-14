@@ -4,7 +4,6 @@ sudo: false
 script: mvn package -f ch.sharpsoft.hexapod.embedded/pom.xml
 deploy:
   provider: releases
-  api_key: ${api_key}
   file: "/home/travis/build/helios57/hexapod/ch.sharpsoft.hexapod.embedded/target/ch.sharpsoft.hexapod.embedded-*.jar"
   skip_cleanup: true
   on:
