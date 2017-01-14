@@ -1,4 +1,4 @@
 language: java
 jdk: oraclejdk8
 sudo: false
-script: mvn package
+script: mvn package -f ch.sharpsoft.hexapod.embedded/pom.xml
