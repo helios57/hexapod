@@ -1,5 +1,8 @@
 package ch.sharpsoft.hexapod.transfer;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -18,6 +21,7 @@ public class RemotePaho implements MqttCallback, Remote {
 	private final static String TOPIC_OUT_SERVO = "Servo/Pos";
 	// private final static String BROKER = "tcp://127.0.0.1:1883";
 	private final static String BROKER = "tcp://192.168.2.122:1883";
+	// private final static String BROKER = "tcp://192.168.2.167:1883";
 	private final static String CLIENTID = "JavaController";
 	private final MemoryPersistence persistence = new MemoryPersistence();
 	private final Deque<IMqttDeliveryToken> openMsgs = new LinkedList<>();
@@ -79,14 +83,24 @@ public class RemotePaho implements MqttCallback, Remote {
 		}
 	}
 
-	public static void main(String[] args) throws MqttException, InterruptedException {
+	public static void main(String[] args) throws MqttException, InterruptedException, IOException {
 		RemotePaho r = new RemotePaho();
 		r.init();
-		int count = 0;
+		// r.sendServoPosition("#11P1600\r\n");
+		// r.sendServoPosition("#12P1600\r\n");
+		// r.sendServoPosition("#13P1600\r\n");
+		// r.sendServoPosition("#14P1600\r\n");
+		r.sendServoPosition("#15P1100\r\n");
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		while (true) {
-			System.out.println(count++ + " " + r.sendServoPosition(
-					"#0P1600#1P1600#2P1600#3P1600#4P1600#5P1600#6P1600#7P1600#8P1600#9P1600#10P1600#11P1600#12P1600#13P1600#14P1600#15P1600#16P1600#17P1600#18P1600#19P1600#20P1600#21P1600#22P1600#23P1600#24P1600#25P1600#26P1600#27P1600#28P1600#29P1600#30P1600#31P1600\r\n"));
-			Thread.sleep(100);
+			System.out.print("Enter String");
+			String s = br.readLine();
+			r.sendServoPosition("#15P" + s + "\r\n");
 		}
+		// while (true) {
+		// System.out.println(count++ + " " + r.sendServoPosition(
+		// "#0P1600#1P1600#2P1600#3P1600#4P1600#5P1600#6P1600#7P1600#8P1600#9P1600#10P1600#11P1600#12P1600#13P1600#14P1600#15P1600#16P1600#17P1600#18P1600#19P1600#20P1600#21P1600#22P1600#23P1600#24P1600#25P1600#26P1600#27P1600#28P1600#29P1600#30P1600#31P1600\r\n"));
+		// Thread.sleep(100);
+		// }
 	}
 }

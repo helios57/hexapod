@@ -2,12 +2,11 @@ package ch.sharpsoft.hexapod;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class WalkSafe {
-	private static final Vector3 UP = new Vector3(0.0, 0.0, 5);
+	private static final Vector3 UP = new Vector3(0.0, 0.0, 1);
 	private final Hexapod hp;
 	private Vector3 direction;
 	private final Set<Leg> grp1 = new HashSet<>();
@@ -34,7 +33,7 @@ public class WalkSafe {
 
 	public void setDirection(final Vector3 direction) {
 		if (direction != null) {
-			this.direction = direction.normalize();
+			this.direction = direction.normalize().multiply(2.0);
 		} else {
 			this.direction = null;
 		}

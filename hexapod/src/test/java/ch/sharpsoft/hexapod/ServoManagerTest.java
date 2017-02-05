@@ -27,13 +27,14 @@ public class ServoManagerTest {
 		new HexapodRenderer(hp);
 		WalkSafe walkSimple = new WalkSafe(hp);
 		// WalkSimple walkSimple = new WalkSimple(hp);
-		walkSimple.setDirection(new Vector3(1, 0, 0));
+		walkSimple.setDirection(new Vector3(-1, 0, 0));
 		while (true) {
-			int delay = 1000;
+			int delay = 100;
 			try {
 				walkSimple.doNextAction();
 				sm.setMoveTime(delay);
 				sm.sendState();
+				// reload();
 				Thread.sleep(delay);
 			} catch (Exception e) {
 				e.printStackTrace();

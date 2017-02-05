@@ -8,6 +8,8 @@ import java.util.Set;
 
 public class WalkSimple {
 	private static final Vector3 UP = new Vector3(0.0, 0.0, 5);
+	private static float FACTOR = 0.01f;
+
 	private final Hexapod hp;
 	private Vector3 direction;
 	private Quaternion rotation;
@@ -27,7 +29,7 @@ public class WalkSimple {
 
 	public void setDirection(final Vector3 direction) {
 		if (direction != null) {
-			this.direction = direction.normalize();
+			this.direction = direction.normalize().multiply(FACTOR);
 		} else {
 			this.direction = null;
 		}

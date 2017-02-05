@@ -22,9 +22,9 @@ import com.jogamp.opengl.util.Animator;
 
 public class HexapodRenderer {
 	Hexapod hp;
-	int eyeX = 40;
+	int eyeX = 30;
 	int eyeY = 0;
-	int eyeZ = 40;
+	int eyeZ = 30;
 
 	public HexapodRenderer(Hexapod hp) {
 		this.hp = hp;
@@ -51,6 +51,7 @@ public class HexapodRenderer {
 			for (List<Vector3> box : l.getBoundingBoxes()) {
 				pushBox(gl2, box);
 			}
+			// pushBox(gl2, l.getBoundingBoxes().get(2));
 		}
 	}
 

@@ -23,7 +23,7 @@ public class Simulation {
 		Double ground = lastEndpoints.stream().map(e -> e.getZ()).collect(Collectors.averagingDouble(d -> d)) + 0.5f;
 		System.out.println("ground " + ground);
 		List<Vector3> groundVectors = new ArrayList<>(6);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1000; i++) {
 			groundVectors.clear();
 
 			ws.doNextAction();
@@ -35,9 +35,9 @@ public class Simulation {
 					groundVectors.add(current.substract(last));
 				}
 			}
-			
-			for(Vector3 gv : groundVectors){
-				
+
+			for (Vector3 gv : groundVectors) {
+				System.out.println(gv);
 			}
 
 			lastEndpoints = currentEndpoints;
