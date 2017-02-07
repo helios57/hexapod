@@ -2,6 +2,7 @@ package ch.sharpsoft.hexapod.transfer;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.function.Consumer;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
@@ -15,6 +16,7 @@ import ch.sharpsoft.hexapod.transfer.Api.IMU;
 
 public class RemotePaho implements MqttCallback, Remote {
 	private final static String TOPIC_IN_IMU = "Sensor/IMU";
+	private final static String TOPIC_IN_CONTROL = "User/Control";
 	private final static String TOPIC_OUT_SERVO = "Servo/Pos";
 	private final static String BROKER = "tcp://127.0.0.1:1883";
 	// private final static String BROKER = "tcp://192.168.2.122:1883";
@@ -23,6 +25,7 @@ public class RemotePaho implements MqttCallback, Remote {
 	private final MemoryPersistence persistence = new MemoryPersistence();
 	private final Deque<IMqttDeliveryToken> openMsgs = new LinkedList<>();
 	private MqttAsyncClient client;
+	private Consumer<String> inControlListener;
 
 	public RemotePaho() {
 	}
@@ -36,15 +39,23 @@ public class RemotePaho implements MqttCallback, Remote {
 			client.setCallback(this);
 			Thread.sleep(1000);
 			client.subscribe(TOPIC_IN_IMU, 0);
+			client.subscribe(TOPIC_IN_CONTROL, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	public void setInControlListener(Consumer<String> inControlListener) {
+		this.inControlListener = inControlListener;
+
+	}
+
 	public void messageArrived(final String topic, final MqttMessage message) throws Exception {
 		if (TOPIC_IN_IMU.equals(topic)) {
 			IMU imu = IMU.parseFrom(message.getPayload());
-			// System.out.println(imu);
+		}
+		if (TOPIC_IN_CONTROL.equals(topic) && inControlListener != null) {
+			inControlListener.accept(new String(message.getPayload()));
 		}
 	}
 
