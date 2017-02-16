@@ -46,15 +46,17 @@ body {
 	<div id="info">
 		<span id="result"></span>	
 		<form>
-			<input type=text id=input_id />
+			Debug<input id="input_id" type=text/><br/>
+			Height<input id="height" type="range" oninput="heightChange(this.value)"/><br/>
+			Speed<input id="speed" type="range" oninput="speedChange(this.value)"/><br/>
 		</form>
 	</div>
 	<script src="virtualjoystick.js"></script>
 	<script src="mqttws31-min.js"></script>
 	<script src="jquery-3.1.1.min.js"></script>
 	<script>
-			console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 	
+			console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 			var joystick	= new VirtualJoystick({
 				container	: document.getElementById('container'),
 				mouseSupport	: true,
@@ -62,10 +64,29 @@ body {
 			joystick.addEventListener('touchStart', function(){
 				console.log('down')
 			})
-			joystick.addEventListener('touchEnd', function(){
+			joystick.addEventListener('touchEnd', function(){			  	
 				console.log('up')
 			})
+			joystick.addEventListener('touchmove', function(){
+				message = new Paho.MQTT.Message(joystick.deltaX()+";"+joystick.deltaY());
+			  	message.destinationName = "CONTROLLER/MOVE";
+			  	client.send(message);
+			})
+			joystick.addEventListener('mousemove', function(){
+				message = new Paho.MQTT.Message(joystick.deltaX()+";"+joystick.deltaY());
+			  	message.destinationName = "CONTROLLER/MOVE";
+			  	client.send(message);
+			})
+			var lastX=0;
+			var lastY=0;
 			setInterval(function(){
+				if (joystick.deltaX() != lastX || joystick.deltaY() !=lastY){
+					message = new Paho.MQTT.Message(joystick.deltaX()+";"+joystick.deltaY());
+			  		message.destinationName = "CONTROLLER/MOVE";
+			  		client.send(message);
+			  		lastX=joystick.deltaX();
+			  		lastY=joystick.deltaY();
+				}
 				var outputEl	= document.getElementById('result');
 				outputEl.innerHTML	= '<b>Result:</b> '
 					+ ' dx:'+joystick.deltaX()
@@ -75,6 +96,16 @@ body {
 					+ (joystick.left()	? ' left'	: '')
 					+ (joystick.down()	? ' down' 	: '')	
 			}, 1/30 * 1000);
+			function heightChange(v){
+				message = new Paho.MQTT.Message(v);
+				message.destinationName = "CONTROLLER/HEIGHT";
+				client.send(message);
+			}
+			function speedChange(v){
+				message = new Paho.MQTT.Message(v);
+				message.destinationName = "CONTROLLER/SPEED";
+				client.send(message);			
+			}
 		</script>
 		<script>
 			// Create a client instance
@@ -94,11 +125,10 @@ body {
 			  // Once a connection has been made, make a subscription and send a message.
 			  console.log("onConnect");
 			  client.subscribe("SERVO/OUT");
-			  message = new Paho.MQTT.Message("0:320");
-			  message.destinationName = "SERVO/OUT";
-			  client.send(message);
-			}
-			
+			  client.subscribe("CONTROLLER/#");
+			  heightChange("50");
+			  speedChange("50");
+			}			
 			// called when the client loses its connection
 			function onConnectionLost(responseObject) {
 			  if (responseObject.errorCode !== 0) {
@@ -108,7 +138,7 @@ body {
 			
 			// called when a message arrives
 			function onMessageArrived(message) {
-			  console.log("onMessageArrived:"+message.payloadString);
+			  console.log("onMessageArrived: "+message.destinationName + " " +message.payloadString);
 			}
 			
 			$('#input_id').on('input', function() {
@@ -116,7 +146,6 @@ body {
 			  	message.destinationName = "SERVO/OUT";
 			  	client.send(message);
 			})
-		</script>
-		
+		</script>		
 	</body>
 </html>
