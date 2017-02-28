@@ -1,4 +1,4 @@
-package ch.sharpsoft.hexapod;
+package ch.sharpsoft.hexapod.walk;
 
 import ch.sharpsoft.hexapod.util.Quaternion;
 import ch.sharpsoft.hexapod.util.Vector3;
@@ -20,12 +20,17 @@ public interface Walk {
 	 * rotation-parts will be taken into account. Set to <code>null</code> to
 	 * stop rotation.
 	 */
-	void setRotation(Quaternion rotation);
+	void setHeadingRelative(Quaternion rotation);
 
 	/**
 	 * Perform the next walk action, optionally taking the deltaT into account.
 	 */
-	void doNextAction(long deltaT);
+	void doNextAction();
+
+	/**
+	 * Set the Size each action will perform
+	 */
+	void setActionSize(double cm);
 
 	/**
 	 * Set the distance legs will be lifted while walking.
