@@ -1,0 +1,147 @@
+<html>
+<head lang="de">
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<title>Hexapod</title>
+<style>
+body {
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
+	background-color: #BBB;
+}
+
+#info {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	padding: 5px;
+	text-align: center;
+}
+
+#info a {
+	color: #66F;
+	text-decoration: none;
+}
+
+#info a:hover {
+	text-decoration: underline;
+}
+
+#container {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+}
+</style>
+</head>
+<body>
+	<div style="text-align: center;" id="container">
+		<img style="-webkit-user-select: none; align: middle;"
+			src="http://tank.xn--lc-xka.ch:8081/">
+	</div>
+	<div id="info">
+		<span id="result"></span>
+		<form>
+			Debug<input id="input_id" type=text /><br />
+		</form>
+	</div>
+	<script src="virtualjoystick.js"></script>
+	<script src="mqttws31-min.js"></script>
+	<script src="jquery-3.1.1.min.js"></script>
+	<script>
+			var joystickleft	= new VirtualJoystick({
+				container	    : document.getElementById('container'),
+				strokeStyle		: 'cyan',
+				mouseSupport	: true,
+			});
+			joystickleft.addEventListener('touchStartValidation', function(event){
+				var touch	= event.changedTouches[0];
+				if( touch.pageX < window.innerWidth/2 )	return false;
+				return true
+			});
+	
+			var joystickright	= new VirtualJoystick({
+				container	    : document.getElementById('container'),
+				strokeStyle	 	: 'orange',
+				mouseSupport	: true,
+			});
+			joystickright.addEventListener('touchStartValidation', function(event){
+				var touch	= event.changedTouches[0];
+				if( touch.pageX >= window.innerWidth/2 )	return false;
+				return true
+			});
+			
+			var lastX=0;
+			var lastY=0;
+			setInterval(function(){
+				if (joystickright.deltaX() != lastX || joystickright.deltaY() !=lastY){
+					var leftTrack = (300 + joystickright.deltaY() - joystickright.deltaX())|0;
+					var rightTrack= (300 + joystickright.deltaY() + joystickright.deltaX())|0;
+					message = new Paho.MQTT.Message("0:"+leftTrack);
+			  		message.destinationName = "SERVO/OUT";
+			  		client.send(message);
+					message = new Paho.MQTT.Message("1:"+rightTrack);
+			  		message.destinationName = "SERVO/OUT";
+			  		client.send(message);
+			  		lastX=joystickright.deltaX();
+			  		lastY=joystickright.deltaY();
+				}
+				var outputEl	= document.getElementById('result');
+				outputEl.innerHTML	= '<b>Result:</b> '
+					+ ' dx:'+joystickleft.deltaX()
+					+ ' dy:'+joystickleft.deltaY()	
+			}, 1/30 * 1000);
+		</script>
+	<script>
+			// Create a client instance
+			//var client = new Paho.MQTT.Client("192.168.2.122", 9001, "webSocketClient");
+			//var client = new Paho.MQTT.Client("192.168.2.167", 9001, "webSocketClient");
+			var client = new Paho.MQTT.Client("tank.lüc.ch", 9001, "webSocketClient2");
+			//var client = new Paho.MQTT.Client(location.hostname, 9001, "webSocketClient");
+			
+			// set callback handlers
+			client.onConnectionLost = onConnectionLost;
+			client.onMessageArrived = onMessageArrived;
+			
+			// connect the client
+			client.connect({onSuccess:onConnect});
+			
+			
+			// called when the client connects
+			function onConnect() {
+			  // Once a connection has been made, make a subscription and send a message.
+			  console.log("onConnect");
+			  client.subscribe("SERVO/OUT");
+			  message = new Paho.MQTT.Message("0:300");
+			  message.destinationName = "SERVO/OUT";
+			  client.send(message);
+			  message = new Paho.MQTT.Message("1:300");
+			  message.destinationName = "SERVO/OUT";
+			  client.send(message);
+			}			
+			// called when the client loses its connection
+			function onConnectionLost(responseObject) {
+			  if (responseObject.errorCode !== 0) {
+			    console.log("onConnectionLost:"+responseObject.errorMessage);
+			  }
+			}
+			
+			// called when a message arrives
+			function onMessageArrived(message) {
+			  console.log("onMessageArrived: "+message.destinationName + " " +message.payloadString);
+			}
+			
+			$('#input_id').on('input', function() {
+			    message = new Paho.MQTT.Message($(this).val());
+			  	message.destinationName = "SERVO/OUT";
+			  	client.send(message);
+			})
+		</script>
+</body>
+</html>
