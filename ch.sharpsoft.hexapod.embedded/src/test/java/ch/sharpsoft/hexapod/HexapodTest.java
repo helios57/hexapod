@@ -111,8 +111,8 @@ public class HexapodTest {
 	}
 
 	private void assertEquals(Vector3 v1, Vector3 v2) {
-		Assert.assertEquals("X", v1.getX(), v2.getX(), 0.03);
-		Assert.assertEquals("Y", v1.getY(), v2.getY(), 0.03);
-		Assert.assertEquals("Z", v1.getZ(), v2.getZ(), 0.03);
+		Assert.assertEquals("X", v1.getX(), v2.getX(), 0.04);
+		Assert.assertEquals("Y", v1.getY(), v2.getY(), 0.04);
+		Assert.assertEquals("Z", v1.getZ(), v2.getZ(), 0.04);
 	}
 }
