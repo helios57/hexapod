@@ -11,7 +11,7 @@ public class SimulationObject extends ModelInstance implements Disposable {
 	public final btRigidBody body;
 	public final MotionState motionState;
 	public final btCollisionShape shape;
-	private btRigidBody.btRigidBodyConstructionInfo btRigidBodyConstructionInfo;
+
 	private Vector3 localInertia;
 
 	public SimulationObject(Model model, String node, btCollisionShape shape, float mass) {
@@ -25,8 +25,9 @@ public class SimulationObject extends ModelInstance implements Disposable {
 		}
 		motionState = new MotionState();
 		motionState.transform = transform;
-		btRigidBodyConstructionInfo = new btRigidBody.btRigidBodyConstructionInfo(mass, motionState, shape, localInertia);
+		btRigidBody.btRigidBodyConstructionInfo btRigidBodyConstructionInfo = new btRigidBody.btRigidBodyConstructionInfo(mass, motionState, shape, localInertia);
 		body = new btRigidBody(btRigidBodyConstructionInfo);
+		btRigidBodyConstructionInfo.dispose();
 		body.setMotionState(motionState);
 	}
 
@@ -34,6 +35,5 @@ public class SimulationObject extends ModelInstance implements Disposable {
 	public void dispose() {
 		body.dispose();
 		motionState.dispose();
-		btRigidBodyConstructionInfo.dispose();
 	}
 }
