@@ -127,32 +127,24 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 		ModelBuilder mb = new ModelBuilder();
 		mb.begin();
 		mb.node().id = "ground";
-		mb.part("ground", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.GREEN))).box(100f, 1f, 100f);
+		mb.part("ground", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN))).box(100f, 1f, 100f);
 
 		mb.node().id = "main";
-		mb.part("main", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(24f, 2f, 12f);
+		mb.part("main", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(24f, 2f, 12f);
 
 		mb.node().id = "leg0";
-		mb.part("leg0", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(1f, 1f, 3f);
+		mb.part("leg0", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(1f, 1f, 3f);
 		mb.node().id = "leg1";
-		mb.part("leg1", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(5f, 1f, 3f);
+		mb.part("leg1", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(5f, 1f, 3f);
 		mb.node().id = "leg2";
-		mb.part("leg2", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(7f, 1f, 3f);
+		mb.part("leg2", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(7f, 1f, 3f);
 		mb.node().id = "leg3";
-		mb.part("leg3", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(13f, 1f, 3f);
+		mb.part("leg3", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(13f, 1f, 3f);
 
 		mb.node().id = "box";
-		mb.part("box", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(1f, 1f, 1f);
+		mb.part("box", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(1f, 1f, 1f);
 		mb.node().id = "box2";
-		mb.part("box2", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.RED))).box(1f, 1f, 1f);
+		mb.part("box2", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.RED))).box(1f, 1f, 1f);
 		model = mb.end();
 
 		collisionConfig = new btDefaultCollisionConfiguration();
@@ -170,8 +162,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 		main.transform.trn(0f, 9f, 0f);
 		main.body.proceedToTransform(main.transform);
 		main.body.setUserValue(instances.size);
-		main.body.setCollisionFlags(
-				main.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+		main.body.setCollisionFlags(main.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
 		instances.add(main);
 		dynamicsWorld.addRigidBody(main.body);
 		main.body.setContactCallbackFlag(OBJECT_FLAG);
@@ -186,20 +177,17 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 			Vector3 sizeLeg1 = new Vector3(5f * 0.5f, 1f * 0.5f, 3f * 0.5f);
 			SimulationObject leg1 = new SimulationObject(model, "leg1", new btBoxShape(sizeLeg1), 5f * 0.1f);
 			ch.sharpsoft.hexapod.util.Quaternion orientation = segment1.getOrientation();
-			ch.sharpsoft.hexapod.util.Vector3 correction = orientation
-					.multiply(new ch.sharpsoft.hexapod.util.Vector3(sizeLeg1.x, 0, 0));
+			ch.sharpsoft.hexapod.util.Vector3 correction = orientation.multiply(new ch.sharpsoft.hexapod.util.Vector3(sizeLeg1.x, 0, 0));
 			ch.sharpsoft.hexapod.util.Vector3 startPoint = segment1.getStartPoint().add(correction);
 			Quaternion orientation2 = new Quaternion();
-			orientation2.set((float) orientation.getX(), (float) orientation.getZ(), (float) orientation.getY(),
-					(float) -orientation.getW());
+			orientation2.set((float) orientation.getX(), (float) orientation.getZ(), (float) orientation.getY(), (float) -orientation.getW());
 			leg1.transform.translate(0f, 9f, 0f);
 			leg1.transform.translate(toVector3(startPoint));
 			leg1.transform.rotate(orientation2);
 
 			leg1.body.proceedToTransform(leg1.transform);
 			leg1.body.setUserValue(instances.size);
-			leg1.body.setCollisionFlags(
-					leg1.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+			leg1.body.setCollisionFlags(leg1.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
 			instances.add(leg1);
 
 			dynamicsWorld.addRigidBody(leg1.body);
@@ -226,10 +214,8 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 	}
 
 	private void createGround() {
-		SimulationObject ground = new SimulationObject(model, "ground", new btBoxShape(new Vector3(100f, 1f, 100f)),
-				0f);
-		ground.body.setCollisionFlags(
-				ground.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
+		SimulationObject ground = new SimulationObject(model, "ground", new btBoxShape(new Vector3(100f, 1f, 100f)), 0f);
+		ground.body.setCollisionFlags(ground.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
 		instances.add(ground);
 		dynamicsWorld.addRigidBody(ground.body);
 		ground.body.setContactCallbackFlag(GROUND_FLAG);
