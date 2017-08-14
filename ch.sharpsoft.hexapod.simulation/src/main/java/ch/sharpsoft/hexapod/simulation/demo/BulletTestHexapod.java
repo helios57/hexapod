@@ -199,9 +199,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 			Vector3 axisInA = new Vector3(0f, -1f, 0f);
 			Vector3 axisInB = new Vector3(0f, -1f, 0f);
 			btHingeConstraint hinge = new btHingeConstraint(main.body, leg1.body, pivotInA, pivotInB, axisInA, axisInB);
-			float yaw = (float) leg.getAngles()[0];// (float)
-			// -orientation.toAngles()[2];
-			// ((180f / Math.PI) *
+			float yaw = (float) leg.getStartYaw() + (float) Math.PI;
 			hinge.setLimit(yaw, yaw);
 			hinge.enableAngularMotor(true, 1f, 1f);
 

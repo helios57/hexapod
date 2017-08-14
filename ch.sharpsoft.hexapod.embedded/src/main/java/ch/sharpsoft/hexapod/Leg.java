@@ -117,7 +117,7 @@ public class Leg {
 
 	public void setEndpoint(final Vector3 vector3) {
 		final Vector3 legframe = vector3.substract(startPoint);
-		final double alpha = atan2(-legframe.getY(), legframe.getX()) - startYaw;
+		final double alpha = atan2(-legframe.getY(), legframe.getX()) - getStartYaw();
 		k1.setAngle(alpha);
 		final Quaternion o1 = startOrientation.multiply(Quaternion.fromEuler(0.0, 0.0, alpha));
 		segment1.setOrientation(o1);
@@ -209,5 +209,9 @@ public class Leg {
 
 	public double getMaxLength() {
 		return maxLength;
+	}
+
+	public double getStartYaw() {
+		return startYaw;
 	}
 }
