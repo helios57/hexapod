@@ -119,14 +119,11 @@ public class BulletTestHinge extends JFrame implements ApplicationListener {
 		ModelBuilder mb = new ModelBuilder();
 		mb.begin();
 		mb.node().id = "ground";
-		mb.part("ground", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.GREEN))).box(100f, 1f, 100f);
+		mb.part("ground", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN))).box(100f, 1f, 100f);
 		mb.node().id = "box";
-		mb.part("box", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(1f, 1f, 1f);
+		mb.part("box", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE))).box(1f, 1f, 1f);
 		mb.node().id = "box2";
-		mb.part("box2", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.RED))).box(1f, 1f, 1f);
+		mb.part("box2", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.RED))).box(1f, 1f, 1f);
 		model = mb.end();
 
 		collisionConfig = new btDefaultCollisionConfiguration();
@@ -135,13 +132,12 @@ public class BulletTestHinge extends JFrame implements ApplicationListener {
 		constraintSolver = new btSequentialImpulseConstraintSolver();
 		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
 		dynamicsWorld.setGravity(new Vector3(0, -9.81f, 0));
-		contactListener = new SimulationContactListener();
 
 		instances = new Array<SimulationObject>();
-		SimulationObject ground = new SimulationObject(model, "ground", new btBoxShape(new Vector3(100f, 1f, 100f)),
-				0f);
-		ground.body.setCollisionFlags(
-				ground.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
+		contactListener = new SimulationContactListener(instances);
+
+		SimulationObject ground = new SimulationObject(model, "ground", new btBoxShape(new Vector3(100f, 1f, 100f)), 0f);
+		ground.body.setCollisionFlags(ground.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
 		instances.add(ground);
 		dynamicsWorld.addRigidBody(ground.body);
 		ground.body.setContactCallbackFlag(GROUND_FLAG);
@@ -156,8 +152,7 @@ public class BulletTestHinge extends JFrame implements ApplicationListener {
 		obj1.transform.trn(0f, 9f, 0f);
 		obj1.body.proceedToTransform(obj1.transform);
 		obj1.body.setUserValue(instances.size);
-		obj1.body.setCollisionFlags(
-				obj1.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+		obj1.body.setCollisionFlags(obj1.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
 		instances.add(obj1);
 		dynamicsWorld.addRigidBody(obj1.body);
 		obj1.body.setContactCallbackFlag(OBJECT_FLAG);
@@ -173,8 +168,7 @@ public class BulletTestHinge extends JFrame implements ApplicationListener {
 
 		obj2.body.proceedToTransform(obj2.transform);
 		obj2.body.setUserValue(instances.size);
-		obj2.body.setCollisionFlags(
-				obj2.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+		obj2.body.setCollisionFlags(obj2.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
 		instances.add(obj2);
 
 		Vector3 pivotInA = new Vector3(0.5f, 0f, -0.5f);

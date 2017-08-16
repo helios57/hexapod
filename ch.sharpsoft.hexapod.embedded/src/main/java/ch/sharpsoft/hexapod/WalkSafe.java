@@ -8,7 +8,7 @@ import java.util.Set;
 import ch.sharpsoft.hexapod.util.Vector3;
 
 public class WalkSafe {
-	private static final Vector3 UP = new Vector3(0.0, 0.0, 1);
+	private static final Vector3 UP = new Vector3(0.0, 0.0, 5);
 	private final Hexapod hp;
 	private Vector3 direction;
 	private final Set<Leg> grp1 = new HashSet<>();
