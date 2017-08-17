@@ -36,6 +36,7 @@ import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btConvexHullShape;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
@@ -146,7 +147,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 
 		createGround();
 
-		final SimulationObject main = new SimulationObject(model, "main", new btBoxShape(new Vector3(12f, 1f, 6f)), 4f);
+		final SimulationObject main = new SimulationObject(model, "main", new btBoxShape(new Vector3(12f, 1f, 6f)), 2f);
 		main.transform.trn(0f, 16f, 0f);
 		main.body.proceedToTransform(main.transform);
 		main.body.setUserValue(instances.size);
@@ -219,7 +220,22 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 
 			final LegSegment segment3 = leg.getEndSegment();
 			final Vector3 sizeLeg3 = new Vector3(13f * 0.5f, 1f * 0.5f, 3f * 0.5f);
-			final SimulationObject leg3 = new SimulationObject(model, "leg3", new btBoxShape(sizeLeg3), 1f * 0.2f);
+			// btBoxShape leg3Shape = new btBoxShape(sizeLeg3);
+			final btConvexHullShape leg3Shape = new btConvexHullShape();
+			leg3Shape.addPoint(new Vector3(-13f * 0.5f, 1f * 0.5f, 3f * 0.5f));
+			leg3Shape.addPoint(new Vector3(-13f * 0.5f, -1f * 0.5f, 3f * 0.5f));
+			leg3Shape.addPoint(new Vector3(-13f * 0.5f, -1f * 0.5f, 3f * -0.5f));
+			leg3Shape.addPoint(new Vector3(-13f * 0.5f, 1f * 0.5f, 3f * -0.5f));
+			leg3Shape.addPoint(new Vector3(13f * 0.5f, 0f, 0f));
+
+			// final btShapeHull hull = new btShapeHull(shape);
+			// hull.buildHull(shape.getMargin());
+			// final btConvexHullShape result = new btConvexHullShape(hull);
+			// // delete the temporary shape
+			// shape.dispose();
+			// hull.dispose();
+
+			final SimulationObject leg3 = new SimulationObject(model, "leg3", leg3Shape, 1f * 0.2f);
 			final ch.sharpsoft.hexapod.util.Quaternion orientation3 = segment3.getOrientation();
 			final ch.sharpsoft.hexapod.util.Vector3 correction3 = orientation.multiply(new ch.sharpsoft.hexapod.util.Vector3(sizeLeg3.x, 0, 0));
 			final ch.sharpsoft.hexapod.util.Vector3 startPoint3 = segment3.getStartPoint().add(correction3);
@@ -257,9 +273,9 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 			update.run();
 			updateAngles.add(update);
 
-			hinge1.enableAngularMotor(true, 10f, 10f);
-			hinge2.enableAngularMotor(true, 10f, 10f);
-			hinge3.enableAngularMotor(true, 10f, 10f);
+			hinge1.enableAngularMotor(true, 1f, 1f);
+			hinge2.enableAngularMotor(true, 1f, 1f);
+			hinge3.enableAngularMotor(true, 1f, 1f);
 			dynamicsWorld.addConstraint(hinge1, true);
 			dynamicsWorld.addConstraint(hinge2, true);
 			dynamicsWorld.addConstraint(hinge3, true);
@@ -313,7 +329,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 		if ((spawnTimer -= delta) < 0) {
 			walkSafe.doNextAction();
 			updateAngles.forEach(Runnable::run);
-			spawnTimer = 1f;
+			spawnTimer = 5f;
 			Vector3 position = new Vector3();
 			instances.get(1).transform.getTranslation(position);
 			System.out.println(position);
