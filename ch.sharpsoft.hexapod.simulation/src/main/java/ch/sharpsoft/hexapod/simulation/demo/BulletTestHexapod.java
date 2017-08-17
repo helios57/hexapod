@@ -257,9 +257,9 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 			update.run();
 			updateAngles.add(update);
 
-			hinge1.enableAngularMotor(true, 1f, 1f);
-			hinge2.enableAngularMotor(true, 1f, 1f);
-			hinge3.enableAngularMotor(true, 1f, 1f);
+			hinge1.enableAngularMotor(true, 10f, 10f);
+			hinge2.enableAngularMotor(true, 10f, 10f);
+			hinge3.enableAngularMotor(true, 10f, 10f);
 			dynamicsWorld.addConstraint(hinge1, true);
 			dynamicsWorld.addConstraint(hinge2, true);
 			dynamicsWorld.addConstraint(hinge3, true);
@@ -313,7 +313,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 		if ((spawnTimer -= delta) < 0) {
 			walkSafe.doNextAction();
 			updateAngles.forEach(Runnable::run);
-			spawnTimer = 0.2f;
+			spawnTimer = 1f;
 			Vector3 position = new Vector3();
 			instances.get(1).transform.getTranslation(position);
 			System.out.println(position);
