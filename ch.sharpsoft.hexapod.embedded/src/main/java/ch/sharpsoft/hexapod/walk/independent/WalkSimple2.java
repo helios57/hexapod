@@ -11,8 +11,9 @@ import ch.sharpsoft.hexapod.Leg;
 import ch.sharpsoft.hexapod.util.Quaternion;
 import ch.sharpsoft.hexapod.util.Vector3;
 import ch.sharpsoft.hexapod.walk.Walk;
+import ch.sharpsoft.hexapod.walk.WalkComplete;
 
-public class WalkSimple2 implements Walk {
+public abstract class WalkSimple2 implements WalkComplete {
 	private Vector3 legLift;
 	private final Hexapod hp;
 	private Vector3 direction;
@@ -107,6 +108,6 @@ public class WalkSimple2 implements Walk {
 	@Override
 	public void setActionSize(double cm) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

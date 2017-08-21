@@ -1,5 +1,5 @@
 
-package ch.sharpsoft.hexapod.simulation.demo;
+package ch.sharpsoft.hexapod.simulation.bullettests;
 
 import java.awt.BorderLayout;
 import java.awt.HeadlessException;

@@ -1,4 +1,4 @@
-package ch.sharpsoft.hexapod.simulation.demo;
+package ch.sharpsoft.hexapod.simulation.bullettests;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;

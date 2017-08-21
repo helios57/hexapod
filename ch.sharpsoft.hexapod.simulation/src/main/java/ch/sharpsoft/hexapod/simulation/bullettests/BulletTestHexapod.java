@@ -1,10 +1,11 @@
 
-package ch.sharpsoft.hexapod.simulation.demo;
+package ch.sharpsoft.hexapod.simulation.bullettests;
 
 import java.awt.BorderLayout;
 import java.awt.HeadlessException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -263,19 +264,21 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 
 			Runnable update = () -> {
 				final double[] angles = leg.getAngles();
+				// System.out.println("leg " + leg.getId() + " " +
+				// Arrays.toString(angles));
 				final float a1 = (float) (yaw + angles[0]);
 				final float a2 = (float) (angles[1]);
-				final float a3 = (float) (angles[2]);
-				hinge1.setLimit(a1, a1);
-				hinge2.setLimit(a2, a2);
-				hinge3.setLimit(a3, a3);
+				final float a3 = (float) (angles[2]) - a2;
+				hinge1.setLimit(a1, a1, 0.1f, 1f, 0.1f);
+				hinge2.setLimit(a2, a2, 0.1f, 1f, 0.1f);
+				hinge3.setLimit(a3, a3, 0.1f, 1f, 0.1f);
 			};
 			update.run();
 			updateAngles.add(update);
 
-			hinge1.enableAngularMotor(true, 1f, 1f);
-			hinge2.enableAngularMotor(true, 1f, 1f);
-			hinge3.enableAngularMotor(true, 1f, 1f);
+			// hinge1.enableAngularMotor(true, 1f, 1f);
+			// hinge2.enableAngularMotor(true, 1f, 1f);
+			// hinge3.enableAngularMotor(true, 1f, 1f);
 			dynamicsWorld.addConstraint(hinge1, true);
 			dynamicsWorld.addConstraint(hinge2, true);
 			dynamicsWorld.addConstraint(hinge3, true);
@@ -329,7 +332,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 		if ((spawnTimer -= delta) < 0) {
 			walkSafe.doNextAction();
 			updateAngles.forEach(Runnable::run);
-			spawnTimer = 5f;
+			spawnTimer = 0.2f;
 			Vector3 position = new Vector3();
 			instances.get(1).transform.getTranslation(position);
 			System.out.println(position);
