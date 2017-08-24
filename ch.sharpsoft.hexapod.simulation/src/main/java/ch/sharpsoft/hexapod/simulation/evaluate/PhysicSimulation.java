@@ -31,6 +31,7 @@ import ch.sharpsoft.hexapod.Leg;
 import ch.sharpsoft.hexapod.LegSegment;
 
 public class PhysicSimulation implements Disposable {
+	public final static int USERVALUE_COLLISION_GROUP_1 =7;
 	private final static short GROUND_FLAG = 1 << 8;
 	private final static short OBJECT_FLAG = 1 << 9;
 
@@ -55,7 +56,7 @@ public class PhysicSimulation implements Disposable {
 		constraintSolver = new btSequentialImpulseConstraintSolver();
 		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
 		dynamicsWorld.setGravity(new Vector3(0, -9.81f, 0));
-		contactListener = new PhysicSimulationContactListener();
+		contactListener = new PhysicSimulationContactListener(instances);
 		createGround();
 		createTorso();
 		createLegs();

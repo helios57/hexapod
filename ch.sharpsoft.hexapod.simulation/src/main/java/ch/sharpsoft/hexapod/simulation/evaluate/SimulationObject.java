@@ -10,12 +10,14 @@ public class SimulationObject implements Disposable {
 	public final btRigidBody body;
 	public final MotionState motionState;
 	public final btCollisionShape shape;
-
-	private Vector3 localInertia;
 	public final Matrix4 transform;
 
-	public SimulationObject(btCollisionShape shape, float mass) {
+	private final boolean hexaPodBody;
+	private final Vector3 localInertia;
+
+	public SimulationObject(final btCollisionShape shape, final float mass, final boolean hexaPodBody) {
 		this.shape = shape;
+		this.hexaPodBody = hexaPodBody;
 		localInertia = new Vector3();
 		if (mass > 0f) {
 			shape.calculateLocalInertia(mass, localInertia);
@@ -25,7 +27,8 @@ public class SimulationObject implements Disposable {
 		motionState = new MotionState();
 		transform = new Matrix4();
 		motionState.transform = transform;
-		btRigidBody.btRigidBodyConstructionInfo btRigidBodyConstructionInfo = new btRigidBody.btRigidBodyConstructionInfo(mass, motionState, shape, localInertia);
+		final btRigidBody.btRigidBodyConstructionInfo btRigidBodyConstructionInfo = new btRigidBody.btRigidBodyConstructionInfo(
+				mass, motionState, shape, localInertia);
 		body = new btRigidBody(btRigidBodyConstructionInfo);
 		btRigidBodyConstructionInfo.dispose();
 		body.setMotionState(motionState);
@@ -36,5 +39,9 @@ public class SimulationObject implements Disposable {
 		body.dispose();
 		motionState.dispose();
 
+	}
+
+	public boolean isHexaPodBody() {
+		return hexaPodBody;
 	}
 }
