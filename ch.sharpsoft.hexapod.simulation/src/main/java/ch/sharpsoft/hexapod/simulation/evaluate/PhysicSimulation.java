@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -31,7 +32,6 @@ import ch.sharpsoft.hexapod.Leg;
 import ch.sharpsoft.hexapod.LegSegment;
 
 public class PhysicSimulation implements Disposable {
-	public final static int USERVALUE_COLLISION_GROUP_1 =7;
 	private final static short GROUND_FLAG = 1 << 8;
 	private final static short OBJECT_FLAG = 1 << 9;
 
@@ -46,6 +46,7 @@ public class PhysicSimulation implements Disposable {
 	private final Set<Runnable> updateAngles = new HashSet<>();
 	private final List<SimulationObject> instances = new ArrayList<>();
 	private final Vector3 lastPosition = new Vector3();
+	private final AtomicBoolean collisionInHexapod = new AtomicBoolean(false);
 	private SimulationObject torso;
 
 	public PhysicSimulation() {
@@ -56,7 +57,7 @@ public class PhysicSimulation implements Disposable {
 		constraintSolver = new btSequentialImpulseConstraintSolver();
 		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
 		dynamicsWorld.setGravity(new Vector3(0, -9.81f, 0));
-		contactListener = new PhysicSimulationContactListener(instances);
+		contactListener = new PhysicSimulationContactListener(instances, collisionInHexapod);
 		createGround();
 		createTorso();
 		createLegs();
@@ -72,7 +73,7 @@ public class PhysicSimulation implements Disposable {
 	private void createLeg(Leg leg) {
 		final LegSegment segment1 = leg.getSegment1();
 		final Vector3 sizeLeg1 = new Vector3(5f * 0.5f, 1f * 0.5f, 3f * 0.5f);
-		final SimulationObject leg1 = new SimulationObject(new btBoxShape(sizeLeg1), 1f * 0.1f);
+		final SimulationObject leg1 = new SimulationObject(new btBoxShape(sizeLeg1), 1f * 0.1f, true);
 		final ch.sharpsoft.hexapod.util.Quaternion orientation = segment1.getOrientation();
 		final ch.sharpsoft.hexapod.util.Vector3 correction = orientation.multiply(new ch.sharpsoft.hexapod.util.Vector3(sizeLeg1.x, 0, 0));
 		final ch.sharpsoft.hexapod.util.Vector3 startPoint = segment1.getStartPoint().add(correction);
@@ -88,7 +89,7 @@ public class PhysicSimulation implements Disposable {
 
 		final LegSegment segment2 = leg.getSegment2();
 		final Vector3 sizeLeg2 = new Vector3(7f * 0.5f, 1f * 0.5f, 3f * 0.5f);
-		final SimulationObject leg2 = new SimulationObject(new btBoxShape(sizeLeg2), 1f * 0.1f);
+		final SimulationObject leg2 = new SimulationObject(new btBoxShape(sizeLeg2), 1f * 0.1f, true);
 		final ch.sharpsoft.hexapod.util.Quaternion orientation2 = segment2.getOrientation();
 		final ch.sharpsoft.hexapod.util.Vector3 correction2 = orientation2.multiply(new ch.sharpsoft.hexapod.util.Vector3(sizeLeg2.x, 0, 0));
 		final ch.sharpsoft.hexapod.util.Vector3 startPoint2 = segment2.getStartPoint().add(correction2);
@@ -104,7 +105,7 @@ public class PhysicSimulation implements Disposable {
 		final Vector3 sizeLeg3 = new Vector3(13f * 0.5f, 1f * 0.5f, 3f * 0.5f);
 		final btConvexHullShape leg3Shape = createLeg3ShapePyramid();
 
-		final SimulationObject leg3 = new SimulationObject(leg3Shape, 1f * 0.2f);
+		final SimulationObject leg3 = new SimulationObject(leg3Shape, 1f * 0.2f, true);
 		final ch.sharpsoft.hexapod.util.Quaternion orientation3 = segment3.getOrientation();
 		final ch.sharpsoft.hexapod.util.Vector3 correction3 = orientation.multiply(new ch.sharpsoft.hexapod.util.Vector3(sizeLeg3.x, 0, 0));
 		final ch.sharpsoft.hexapod.util.Vector3 startPoint3 = segment3.getStartPoint().add(correction3);
@@ -175,7 +176,7 @@ public class PhysicSimulation implements Disposable {
 	}
 
 	private void createTorso() {
-		torso = new SimulationObject(new btBoxShape(new Vector3(12f, 1f, 6f)), 2f);
+		torso = new SimulationObject(new btBoxShape(new Vector3(12f, 1f, 6f)), 2f, true);
 
 		torso.transform.trn(0f, 16f, 0f);
 		torso.body.proceedToTransform(torso.transform);
@@ -190,7 +191,7 @@ public class PhysicSimulation implements Disposable {
 	}
 
 	private void createGround() {
-		final SimulationObject ground = new SimulationObject(new btBoxShape(new Vector3(10000f, 1f, 10000f)), 0f);
+		final SimulationObject ground = new SimulationObject(new btBoxShape(new Vector3(10000f, 1f, 10000f)), 0f, false);
 		ground.body.setCollisionFlags(ground.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
 		instances.add(ground);
 		dynamicsWorld.addRigidBody(ground.body);
@@ -204,8 +205,11 @@ public class PhysicSimulation implements Disposable {
 	}
 
 	public double[] loop(double dtInSec) {
-		dynamicsWorld.stepSimulation((float) dtInSec, 60, (float) dtInSec);
 		updateAngles.forEach(Runnable::run);
+		dynamicsWorld.stepSimulation((float) dtInSec, 60, (float) dtInSec);
+		if (collisionInHexapod.get()) {
+			return null;
+		}
 		instances.get(1).transform.getTranslation(lastPosition);
 		return new double[] { lastPosition.x, lastPosition.y, lastPosition.z };
 	}
