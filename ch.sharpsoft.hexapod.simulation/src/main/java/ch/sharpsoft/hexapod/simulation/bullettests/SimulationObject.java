@@ -29,6 +29,7 @@ public class SimulationObject extends ModelInstance implements Disposable {
 		body = new btRigidBody(btRigidBodyConstructionInfo);
 		btRigidBodyConstructionInfo.dispose();
 		body.setMotionState(motionState);
+		body.setDamping(0.01f, 0.01f);
 	}
 
 	@Override

@@ -5,10 +5,14 @@ import java.awt.BorderLayout;
 import java.awt.HeadlessException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -44,8 +48,8 @@ import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
 import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btGeneric6DofConstraint;
 import com.badlogic.gdx.physics.bullet.dynamics.btHingeConstraint;
-import com.badlogic.gdx.physics.bullet.dynamics.btJointFeedback;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.utils.Array;
 
@@ -65,7 +69,13 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
 
     public static void main(final String[] args) throws Throwable {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        new BulletTestHexapod();
+        BulletTestHexapod sim = new BulletTestHexapod();
+        Executors.newCachedThreadPool().execute(()->{
+        	LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(1));
+        	while(sim.isVisible()) {
+        		sim.runSimulation();
+        	}
+        });
     }
 
     LwjglAWTCanvas currentTest = null;
@@ -100,7 +110,6 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
     private Environment environment;
     private Model model;
     private Array<SimulationObject> instances;
-    private float spawnTimer;
 
     private btCollisionConfiguration collisionConfig;
     private btDispatcher dispatcher;
@@ -109,7 +118,8 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
     private btDynamicsWorld dynamicsWorld;
     private btConstraintSolver constraintSolver;
 
-    private final Hexapod hp = new Hexapod();
+    private final Hexapod hpInterpolation = new Hexapod();
+    private final Hexapod hpAction = new Hexapod();
     private final Set<Runnable> updateAngles = new HashSet<>();
 
     private WalkSafe walkSafe;
@@ -118,7 +128,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
     public void create() {
         Bullet.init();
 
-        walkSafe = new WalkSafe(hp);
+        walkSafe = new WalkSafe(hpAction);
         walkSafe.setDirection(new ch.sharpsoft.hexapod.util.Vector3(1, 0, 0));
         walkSafe.doNextAction();
 
@@ -162,7 +172,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
         final Vector3 mainMiddle = new Vector3();
         main.transform.getTranslation(mainMiddle);
 
-        final List<Leg> legs = hp.getLegs();
+        final List<Leg> legs = hpInterpolation.getLegs();
         legs.forEach(leg -> {
 
             final LegSegment segment1 = leg.getSegment1();
@@ -192,7 +202,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
             final Vector3 axisInA = new Vector3(0f, -3f, 0f);
             final Vector3 axisInB = new Vector3(0f, -3f, 0f);
             final btHingeConstraint hinge1 = new btHingeConstraint(main.body, leg1.body, pivotInA, pivotInB, axisInA, axisInB);
-            hinge1.setJointFeedback(new btJointFeedback());
+			// hinge1.setJointFeedback(new btJointFeedback());
             final float yaw = (float) leg.getStartYaw();
 
             final LegSegment segment2 = leg.getSegment2();
@@ -221,7 +231,7 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
             final Vector3 axisInA2 = new Vector3(0f, 0f, 3f);
             final Vector3 axisInB2 = new Vector3(0f, 0f, 3f);
             final btHingeConstraint hinge2 = new btHingeConstraint(leg1.body, leg2.body, pivotInA2, pivotInB2, axisInA2, axisInB2);
-            hinge2.setJointFeedback(new btJointFeedback());
+//            hinge2.setJointFeedback(new btJointFeedback());
             final LegSegment segment3 = leg.getEndSegment();
             final Vector3 sizeLeg3 = new Vector3(13f * 0.5f, 1f * 0.5f, 3f * 0.5f);
             // btBoxShape leg3Shape = new btBoxShape(sizeLeg3);
@@ -262,9 +272,9 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
             final Vector3 pivotInB3 = new Vector3(-sizeLeg3.x, 0, 0);
             final Vector3 axisInA3 = new Vector3(0f, 0f, 3f);
             final Vector3 axisInB3 = new Vector3(0f, 0f, 3f);
-
+            //btHingeAccumulatedAngleConstraint
             final btHingeConstraint hinge3 = new btHingeConstraint(leg2.body, leg3.body, pivotInA3, pivotInB3, axisInA3, axisInB3);
-            hinge3.setJointFeedback(new btJointFeedback());
+//            hinge3.setJointFeedback(new btJointFeedback());
             Runnable update = () -> {
                 final double[] angles = leg.getAngles();
                 // System.out.println("leg " + leg.getId() + " " +
@@ -272,9 +282,9 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
                 final float a1 = (float) (yaw + angles[0]);
                 final float a2 = (float) (angles[1]);
                 final float a3 = (float) (angles[2]) - a2;
-                hinge1.setLimit(a1, a1, 0.1f, 1f, 0.1f);
-                hinge2.setLimit(a2, a2, 0.1f, 1f, 0.1f);
-                hinge3.setLimit(a3, a3, 0.1f, 1f, 0.1f);
+                hinge1.setLimit(a1, a1, 0.01f, 1f, 0.0f);
+                hinge2.setLimit(a2, a2, 0.01f, 1f, 0.0f);
+                hinge3.setLimit(a3, a3, 0.01f, 1f, 0.0f);
             };
             update.run();
             updateAngles.add(update);
@@ -327,21 +337,41 @@ public class BulletTestHexapod extends JFrame implements ApplicationListener {
         return new Vector3((float) startPoint.getX(), (float) startPoint.getZ(), (float) startPoint.getY());
     }
 
-    @Override
-    public void render() {
-        // final float delta = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
-        dynamicsWorld.stepSimulation(1f, 60, 1f / 60f);
+    private void runSimulation() {
+    	walkSafe.doNextAction();
+    	List<ch.sharpsoft.hexapod.util.Vector3> endpointsSoll = hpAction.getEndpoints();
+    	List<ch.sharpsoft.hexapod.util.Vector3> endpointsIst = hpInterpolation.getEndpoints();
+    	List<ch.sharpsoft.hexapod.util.Vector3> diff = new ArrayList<>(endpointsSoll.size());
+    	List<ch.sharpsoft.hexapod.util.Vector3> endpointsStep = new ArrayList<>(endpointsSoll.size());
+    	for (int i = 0; i < endpointsIst.size(); i++) {
+    		diff.add(new ch.sharpsoft.hexapod.util.Vector3(0, 0, 0));
+    		endpointsStep.add(new ch.sharpsoft.hexapod.util.Vector3(0, 0, 0));
+    		diff.set(i, endpointsSoll.get(i).substract(endpointsIst.get(i)));
+    		endpointsStep.set(i, endpointsIst.get(i));
+		}
+    	int steps = 100;
+    	for(int i = 0;i<steps;i++) {
+    	 	for (int j = 0; j < endpointsIst.size(); j++) {
+    	 		endpointsStep.set(j, endpointsIst.get(j).add(diff.get(j).multiply((((double)i)/steps))));
+    		}
+    	 	hpInterpolation.setEndpoints(endpointsStep);
+    		updateAngles.forEach(Runnable::run);
+    		dynamicsWorld.stepSimulation(1f, 7, 1f / steps);
+    	}
+
+    	// final float delta = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
+    	
         // dynamicsWorld.stepSimulation(delta, 60, 1f / 60f);
 
         // if ((spawnTimer -= delta) < 0) {
-        walkSafe.doNextAction();
-        updateAngles.forEach(Runnable::run);
         // spawnTimer = 0.2f;
         Vector3 position = new Vector3();
         instances.get(1).transform.getTranslation(position);
         System.out.println(position);
-        // }
-
+    }
+    
+    @Override
+    public void render() {
         camController.update();
 
         Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1.f);
